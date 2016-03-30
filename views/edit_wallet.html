@@ -1,0 +1,27 @@
+{% extends 'show_wallet.html' %}
+
+{% block walletSubcontent %}
+
+{% if !isPrimaryWallet %}
+  <form action="{{ currWallet.url }}" method="post">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Edit Name</h3>
+      </div>
+      <div class="panel-body">
+        <input type="hidden" name="_method" value="put">
+        <input type="text" value="{{ currWallet.name }}" name="name"
+               class="form-control">
+      </div>
+      <div class="panel-footer text-right">
+        <input type="submit" value="Update Wallet" class="btn btn-primary">
+      </div>
+    </div>
+  </form>
+{% else %}
+  Can't edit primary wallets, yet.
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

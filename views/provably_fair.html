@@ -1,0 +1,74 @@
+{% extends 'master.html' %}
+
+{% block embed %}
+<div class="page-header">
+	<h1>Provably Fair</h1>
+</div>
+
+<p>Money Pot uses a simple provably fair scheme, designed to be as easily machine-auditable as possible. It is our
+hope that all MoneyPot games automatically and instantly verify the games on your behalf however it's important
+that you can, and do verify games yourself</p>
+
+<h3>1. We give you a hash</h3>
+
+<p>Before you place a bet, we prove that we have committed to an outcome between <code>0</code> and
+	<code>2<sup>32</sup>-1</code> (inclusive). We do this by sending you the <code>sha256</code>
+hash of the outcome. This has a very important property, if we changed the outcome the
+	hash would be different, and you could know the results were tampered.
+</p>
+
+<p><code>hash = sha256(outcome + '|' + seed)</code></p>
+
+<p>
+	The <code>seed</code> makes it infeasible for an attacker to brute force all <code>2<sup>32</sup></code> possible outcomes,
+	but is otherwise useless data. We do not yet reveal the <code>outcome</code> or <code>seed</code>
+</p>
+
+
+<div class="alert alert-info" role="alert">
+		<span class="glyphicon glyphicon-question-sign"></span>
+		<strong>What is the '|' for?</strong>
+	<p>
+		It prevents any ambiguities as otherwise <code>923XYZ</code> could be an outcome of <code>923</code> and
+		a seed of <code>XYZ</code> or an outcome of <code>92</code> and a seed of <code>3XYZ</code>
+	</p>
+
+</div>
+
+<h3>2. You make the bet</h3>
+
+A bet consists of:
+<ul>
+	<li><strong>Wager</strong> How much you are paying to make the bet</li>
+	<li><strong>Hash</strong> Which hash you are betting against (from the first section)</li>
+	<li><strong>Client Seed</strong> A number between <code>0</code> and <code>2<sup>32</sup>-1</code> which you can use
+		to influence the <strong>final outcome</strong></li>
+	<li><strong>Payouts</strong> A list of <strong>ranges</strong> and <strong>payouts</strong> which if the <strong>final outcome</strong>
+	  lands on, will result in the given payout</li>
+</ul>
+
+<p>
+	A bet must be well-formed, meaning it must be +EV and within the kelly criterion for the house. If the bet can not be
+	accepted (for example it is trying to win too much) the hash remains valid, and it should be reused.
+</p>
+
+<h3>3. We settle the bet</h3>
+
+<p>
+	Once given the bet, we calculate the final outcome:
+</p>
+<p>
+	<code>final_outcome = (outcome + client_seed) % 4294967296</code>
+</p>
+
+<p>
+	and find <strong>all</strong> payout ranges that <em>contain</em> the final outcome are are
+	summed, and paid. The net profit of a bet is the sum of all containing payout ranges, subtract the original wager.
+	To allow complete verification of the fairness, we reveal the original <code>outcome</code> and <code>secret</code> which when
+	hashed together would result in the original given hash.
+</p>
+
+
+{% endblock %}
+
+

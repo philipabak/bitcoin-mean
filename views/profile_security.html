@@ -1,0 +1,232 @@
+{% extends 'profile_layout.html' %}
+
+{% block profileTabContent %}
+
+<div class="page-header">
+  <h1>Security</h1>
+</div>
+
+  {#
+     Two-Factor Authentication
+  #}
+
+  {% if ctx.currUser.mfa_key %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          Two-Factor Authentication
+          <small>ENABLED <span class="glyphicon glyphicon-ok"></span></small>
+        </h3>
+      </div>
+      <div class="panel-body">
+        <form action="/me/mfa" method="post" class="form-inline">
+          <input name="_method" type="hidden" value="delete">
+          <input name="passcode" type="text" class="form-control"
+                 placeholder="6-digit passcode">
+          <input type="submit" class="btn btn-primary" value="Disable">
+        </form>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if potentialSecret %}
+    <form action="/me/mfa" method="post" class="form-inline">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">
+            Two-Factor Authentication
+            <small>NOT ENABLED</small>
+          </h3>
+        </div>
+        <div class="panel-body">
+          <p>If you enable two-factor authentication, you will be prompted for a passcode every time you attempt to login or send money from your wallets.</p>
+          <p>TODO: Refer to <a href="#">FAQ#Two-Factor-Authentication</a></p>
+          <div class="media">
+            <div class="media-left media-middle">
+              <div style="height:200px;width:200px">
+                {{ potentialSecret.qrSvg | safe }}
+              </div>
+            </div>
+            <div class="media-body media-middle">
+              To enable two-factor authentication:
+              <ol>
+                <li>Install <a href="https://support.google.com/accounts/answer/1066447?hl=en">Google Authenticator</a> onto your mobile device.</li>
+                <li>Scan the QR code or type the secret into the app.</li>
+                <li>Backup the secret somewhere safe.</li>
+                <li>The app will then show you a 6-digit passcode. Enter it into the following form.</li>
+              </ol>
+              <input name="secret-key" type="hidden"
+                     value="{{ potentialSecret.key}}">
+              <input name="passcode" type="text" class="form-control"
+                     placeholder="6-digit passcode">
+              <input type="submit" class="btn btn-primary" value="Enable">
+            </div>
+          </div> <!-- /.media -->
+          <span>Secret: <code>{{ potentialSecret.key }}</code></span>
+        </div>
+      </div>
+    </form>
+  {% endif %}
+
+  {#
+     Active Sessions
+  #}
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Active Sessions</h3>
+      <a name="active-sessions"></a>
+    </div>
+    <div class="panel-body">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>IP Address</th>
+            <th>Created</th>
+            <th>Expires</th>
+            <th>Where</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for session in activeSessions %}
+            <tr>
+              <td class="session-ip">
+                <span class="value">
+                  {{ session.ip_address }}
+                </span>
+                {% if session.id === currSessionId %}
+                  <span class="label label-primary">Your Current Session</span>
+                {% endif %}
+              </td>
+              <td>
+                <abbr class="timeago" title="{{ session.created_at.toISOString() }}">
+                  {{ session.created_at|formatDate }}
+                </abbr>
+              </td>
+              <td>
+                <abbr class="timeago" title="{{ session.expired_at.toISOString() }}">
+                  {{ session.expired_at|formatDate }}
+                </abbr>
+              </td>
+              <td class="session-where">--</td>
+              <td>
+                <!-- Go through regular logout path if this is currSession -->
+                {% if session.id === currSessionId %}
+                  <form action="/me/logout" method="post">
+                {% else %}
+                  <form action="{{ session.url }}/logout" method="post">
+                {% endif %}
+                  <input type="submit" value="Logout" class="btn btn-danger btn-xs">
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {#
+     Recent Sessions
+  #}
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Recent Sessions (Last two weeks)</h3>
+    </div>
+    <div class="panel-body">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>IP Address</th>
+            <th>Created</th>
+            <th>Where</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for session in recentSessions %}
+            <tr>
+              <td class="session-ip">
+                <span class="value">
+                  {{ session.ip_address }}
+                </span>
+                {% if session.id === currSessionId %}
+                  <span class="label label-primary">Your Current Session</span>
+                {% elif session.logged_out_at %}
+                  <span class="label label-danger">
+                    Logged out
+                    <abbr class="timeago" title="{{ session.logged_out_at.toISOString() }}">
+                      {{ session.logged_out_at|formatDate }}
+                    </abbr>
+                  </span>
+                {% elif session.isExpired %}
+                  <span class="label label-default">
+                    Expired
+                    <abbr class="timeago" title="{{ session.expired_at.toISOString() }}">
+                      {{ session.expired_at|formatDate }}
+                    </abbr>
+                  </span>
+                {% else %}
+                  {# Must be active #}
+                {% endif %}
+              </td>
+
+              <td>
+                <abbr class="timeago" title="{{ session.created_at.toISOString() }}">
+                  {{ session.created_at|formatDate }}
+                </abbr>
+              </td>
+              <td class="session-where">--</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function lookupAndUpdateLocation(ip_class, location_class) {
+    $(ip_class).each(function() {
+      var $this = $(this);
+      var ipAddr = $this.find('.value').first().text().trim();
+      if (ipAddr === '127.0.0.1' || ipAddr === '::1') return;
+
+      var storageKey = 'ip=' + ipAddr;
+      if (localStorage && localStorage.getItem(storageKey)) {
+        console.log('found for', storageKey, ':', localStorage.getItem(storageKey));
+        $this.siblings(location_class).text(localStorage.getItem(storageKey));
+      } else {
+        console.log('not found for', storageKey);
+
+        var url = 'https://www.telize.com/geoip/' + ipAddr;
+        // HTTP response 400 means IP address invalid
+        $.ajax(url, { dataType: 'jsonp' })
+        .done(function(data) {
+          var whereStr = [
+            data.city,
+            data.region,
+            data.country
+          ].filter(function(item) {  // Filter out falseys
+            return item;
+          }).join(', ');
+          localStorage.setItem(storageKey, whereStr);
+          $this.siblings(location_class).text(whereStr);
+        });
+      }
+
+    });
+  }
+
+  lookupAndUpdateLocation('.session-ip', '.session-where');
+  lookupAndUpdateLocation('.attempt-ip', '.attempt-where');
+
+</script>
+<script>
+  $(function() {
+    $("abbr.timeago").timeago();
+  });
+</script>
+{% endblock %}

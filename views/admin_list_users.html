@@ -1,0 +1,79 @@
+{% extends 'profile_layout.html' %}
+
+{% block profileTabContent %}
+<div class="page-header">
+  <h1>Latest Users</h1>
+  <ul>
+    <li><strong>Within 24h:</strong> {{ usersCount1 }}</li>
+    <li><strong>Within 30d:</strong> {{ usersCount30 }}</li>
+  </ul>
+</div>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>id</th>
+      <th>uname</th>
+      <th>email</th>
+      <th>cold deposits</th>
+	    <th>hot deposits</th>
+	    <th>withdrawals</th>
+	    <th>Net funding</th>
+      <th>created_at</th>
+      <th>locked_at</th>
+      <th>mfa?</th>
+    </tr>
+  </thead>
+  {% for user in users %}
+    <tr>
+      <!-- id -->
+      <td>{{ user.id }}</td>
+      <!-- uname -->
+      <td><a href="{{ user.url }}">{{ user.uname }}</a></td>
+      <!-- email -->
+      <td>
+        {% if user.email %}
+          <input type="text" value="{{ user.email }}"
+                 style="max-width: 100px;">
+        {% else %}
+          --
+        {% endif %}
+      </td>
+      <td>{{ user.cold_deposits|formatSatoshis }} bits</td>
+	    <td>{{ user.hot_deposits|formatSatoshis }} bits</td>
+	    <td>{{ user.withdrawals|formatSatoshis }} bits</td>
+	    <td>{{ (user.cold_deposits + user.hot_deposits - user.withdrawals) |formatSatoshis }} bits</td>
+      <td>
+        <abbr class="timeago" title="{{ user.created_at.toISOString() }}">
+          {{ user.created_at|formatDate }}
+        </abbr>
+      </td>
+      <!-- locked_at -->
+      <td>
+        {% if user.locked_at %}
+          <abbr class="timeago" title="{{ user.locked_at.toISOString() }}">
+            {{ user.locked_at|formatDate }}
+          </abbr>
+        {% else %}
+          --
+        {% endif %}
+      </td>
+      <!-- mfa? -->
+      <td>
+        {% if user.mfa_key %}
+          Yes
+        {% else %}
+          --
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+  $("abbr.timeago").timeago();
+</script>
+{% endblock %}

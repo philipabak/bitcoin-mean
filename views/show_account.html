@@ -1,0 +1,58 @@
+{% extends 'profile_layout.html' %}
+
+{% block profileTabContent %}
+
+<p>
+  <a class="navbar-link" href="{{ ctx.currUser.url }}">
+    View your public profile
+  </a>
+</p>
+
+<h3>Your Balances</h3>
+
+<div class="row">
+  <div class="col-sm-4">
+    <div class="panel panel-default">
+      <div class="panel-heading text-center">
+        <h4>Wallet</h4>
+      </div>
+      <div class="panel-body text-center">
+        <div class="lead">
+          {{ ctx.currUser.balance|formatSatoshis }} bits
+        </div>
+        <a href="/me/receive">Deposit</a>
+        or
+        <a href="/me/send">Withdraw</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="panel panel-default">
+      <div class="panel-heading text-center">
+        <h4>Apps</h4>
+      </div>
+      <div class="panel-body text-center">
+        <div class="lead">
+          {{ ctx.currUser.total_auth_balance|formatSatoshis }} bits
+        </div>
+        <a href="/apps">Manage Apps</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="panel panel-default">
+      <div class="panel-heading text-center">
+        <h4>Investment</h4>
+      </div>
+      <div class="panel-body text-center">
+        <div class="lead">
+          {{ stakeAmount|formatSatoshis }} bits
+        </div>
+        <a href="/me/investment">Manage Investment</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}

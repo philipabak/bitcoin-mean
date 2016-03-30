@@ -1,0 +1,78 @@
+{% extends 'master.html' %}
+
+{% block embed %}
+  <ol class="breadcrumb">
+    <li>
+      <a href="/">Home</a>
+    </li>
+  </ol>
+
+  <div class="page-header">
+    <h3>Reset Password</h3>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-6 col-sm-offset-3">
+      <form action="/forgot" method="post" class="form-horizontal">
+        <div class="panel panel-default no-select">
+          <!--
+              PANEL BODY
+              -->
+          <div class="panel-body">
+
+            <div class="form-group">
+              <label for="email-input" class="col-sm-3 control-label">
+                Email:
+              </label>
+              <div class="col-sm-9">
+                <input id="email-input"
+                       type="email"
+                       name="email"
+                       class="form-control"
+                       required>
+              </div>
+            </div>
+
+	          <div class="form-group">
+		          <label for="email-input" class="col-sm-3 control-label">
+			          Human Test:
+		          </label>
+		          <div class="col-sm-9">
+			          <div class="g-recaptcha" data-sitekey="{{ recaptchaSitekey }}" data-callback="recaptchaSuccessCallback"></div>
+		          </div>
+	          </div>
+
+          </div> <!-- /.panel-body -->
+          <!--
+              PANEL FOOTER
+              -->
+          <div class="panel-footer">
+            <div class="text-right">
+              <input id="forgot-submit"
+                     type="submit"
+                     value="Submit"
+                     class="btn btn-danger" {%if prod %}disabled{% endif %}>
+            </div>
+          </div> <!-- /.panel-footer -->
+        </div> <!-- /.panel -->
+      </form>
+    </div> <!-- /col -->
+  </div> <!-- /.row -->
+
+{% endblock %}
+
+
+
+{% block scripts %}
+<script>
+function recaptchaSuccessCallback() {
+	$('#forgot-submit')
+		.removeClass('btn-danger')
+		.addClass('btn-primary')
+		.attr('disabled', false);
+}
+  $('#email-input').focus();
+</script>
+<script src='https://www.google.com/recaptcha/api.js'></script>
+
+{% endblock %}

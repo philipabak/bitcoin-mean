@@ -1,0 +1,22 @@
+/*
+    This CSS introduces styles that work together with Bootstrap's CSS.
+ */
+
+/*
+    Gives content a border that lines up with the border of Bootstrap's nav-tabs
+    that must be directly above it.
+    This encompasses tab content is a complete border that makes it obvious
+    what will change when a tab is clicked.
+
+    Ex:
+
+    <ul class="nav nav-tabs">...</ul>
+    <div class="tabbed-content"></div>
+ */
+.tabbed-content {
+    padding: 20px 10px 10px 10px;
+    border-radius: 0 0 4px 4px;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}

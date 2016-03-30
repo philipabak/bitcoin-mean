@@ -1,0 +1,452 @@
+{% extends 'master.html' %}
+
+{% block embed %}
+
+<!-- Branding splash -->
+
+<div class="jumbotron text-center" style="background-color: transparent">
+
+  <div class="row">
+    <div class="col-sm-6">
+      <h2>
+        <span style="font-weight: normal;">The world's first</span>
+        <br>bitcoin gambling wallet
+      </h2>
+
+      <div class="text-center" style="margin: 50px 0 25px;">
+        {% if ctx.currUser %}
+          <a class="btn btn-primary btn-lg" href="/me/account">
+            Go to your dashboard
+          </a>
+        {% else %}
+          <a class="btn btn-default btn-lg" href="/login" id="login-btn">
+            Login
+          </a>
+          <a class="btn btn-primary btn-lg" href="/register" id="register-btn">
+            Create an Account
+          </a>
+        {% endif %}
+      </div>
+
+    </div>
+
+    <div class="col-sm-6">
+      <div class="panel panel-default">
+        <div class="panel-body">
+
+          <style>
+
+            .stats-box-span {
+              width: 10em;
+              font-weight: bold;
+	            display: inline-block;
+	            font-family: "Helvetic Neue", Helvetica, Arial;
+            }
+
+
+	          .stats-box {
+		          font-family: "Courier New", Courier, monospace;
+	          }
+          </style>
+
+
+          <ul class="list-unstyled text-left stats-box">
+            <li>
+              <span class="stats-box-span">Bankroll:</span>
+              {{ bankroll.balance|formatSatoshis(0)|nbspPad(14)|safe }}&nbsp;bits
+            </li>
+            <li>
+	            <span class="stats-box-span">Wagered:</span>
+              {{ bankroll.wagered|formatSatoshis(0)|nbspPad(14)|safe }}&nbsp;bits
+            </li>
+            <li>
+              <span class="stats-box-span">Investor Profit:</span>
+
+              {% if bankroll.investorProfit >= 0 %}
+                <span style="color: #2ecc71">{{ ('+' + bankroll.investorProfit|formatSatoshis(0))|nbspPad(14)|safe }}&nbsp;bits</span>
+              {% else %}
+                <span style="color: #e74c3c">{{ (bankroll.investorProfit|formatSatoshis(0))|nbspPad(14)|safe }}&nbsp;bits</span>
+              {% endif %}
+
+
+            <li>
+	          <span class="stats-box-span">Bets:</span>
+              {{ betsCount|formatNumber(0)|nbspPad(14)|safe }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </li>
+          </ul>
+
+        </div><!-- /panel-body -->
+      </div>
+      <div class="text-right text-muted" style="margin-top: -15px;">
+        1,000,000 bits = 1 BTC
+      </div>
+    </div>
+  </div>
+
+</div><!-- /jumbotron -->
+
+<hr>
+
+<h3 class="text-center" style="margin-bottom: 20px;">
+  Some casinos that use MoneyPot:
+</h3>
+
+<div class="row">
+
+  <div class="col-sm-4 text-center">
+    <a href="https://betterbets.io/">
+      <img src="https://www.moneypot.com/img/app-thumbnails/better-bets.png" class="thumbnail" style="display: block; margin: 0 auto; width: 70%;">
+    </a>
+    <a href="https://betterbets.io/" style="display: block;">BetterBets.io</a>
+  </div>
+
+  <div class="col-sm-4 text-center">
+    <a href="https://www.dustdice.com/">
+      <img src="https://www.moneypot.com/img/app-thumbnails/dust-dice.png" class="thumbnail" style="display: block; margin: 0 auto; width: 70%;">
+    </a>
+    <a href="https://www.dustdice.com/" style="display: block;">DustDice.com</a>
+  </div>
+
+  <div class="col-sm-4 text-center">
+    <a href="https://plinkopot.com/">
+      <img src="https://www.moneypot.com/apps/thumbnails/8fc382bb8bf9eaf565b71de577c19f23e21bfd76a1ad1bbb8819c94d0b353f91" class="thumbnail" style="display: block; margin: 0 auto; width: 70%;">
+    </a>
+    <a href="https://plinkopot.com/" style="display: block;">Plinkopot.com</a>
+  </div>
+</div>
+
+<hr>
+
+<h3 class="text-center" style="margin-bottom: 60px; margin-top: 60px;">
+  What is MoneyPot?
+  <br>&darr;
+</h3>
+
+<!-- Tabs -->
+
+<ul class="nav nav-tabs nav-justified">
+  <li role="presentation" class="active lead">
+    <a href="#for-users" aria-controls="for-users" role="tab" data-toggle="tab">
+      For Users and Gamblers
+    </a>
+  </li>
+  <li role="presentation" class="lead">
+    <a href="#for-developers" aria-controls="for-developers" role="tab" data-toggle="tab">
+      For Casino Developers
+    </a>
+  </li>
+</ul>
+
+<!-- Tab content -->
+
+<div class="tab-content">
+
+  <div role="tabpanel" class="tab-pane active" id="for-users">
+
+<div class="page-header">
+  <h2>Manage your funds in one wallet</h2>
+</div>
+
+<div class="row">
+  <div class="col-md-6 lead">
+    <ul>
+      <li>Use our wallet to manage your bitcoin.</li>
+    </ul>
+  </div>
+  <div class="col-md-6">
+    <img src="https://www.moneypot.com/img/intro/your-balances.png" style="max-width: 100%;">
+  </div>
+</div>
+
+<div class="page-header">
+  <h2>Invest in our global bankroll</h2>
+</div>
+
+<div class="row">
+  <div class="col-md-6 lead">
+    <ul>
+      <li>Make money when our casinos make money.</li>
+      <li>Manage your own risk:
+        <ul>
+          <li>Invest nothing</li>
+          <li>Invest something</li>
+          <li>Invest everything</li>
+        </ul>
+      </li>
+      <li>View your stake in the bankroll at any time.</li>
+      <li>Divest at any time to secure your gains.</li>
+      <li>We use the <a href="http://en.wikipedia.org/wiki/Kelly_criterion">Kelly criterion</a> to determine the bets we're willing to take.</li>
+    </ul>
+
+    <div class="text-center">
+      <a href="/investment" class="btn btn-primary">
+        View the current bankroll
+      </a>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <img src="/img/intro/investment.png" style="max-width: 100%;">
+  </div>
+</div>
+
+<div class="page-header">
+  <h2>Track all changes to your balance</h2>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <ul class="lead">
+      <li>We aggressively record all changes to your funds in your unified history ledger.</li>
+      <li>Whether you're claiming a faucet, winning a bet, investing your bits, or sending some coin,
+        these will show up under your history tab.
+      </li>
+      <li>Know exactly what's happening to your money, when, and why.</li>
+    </ul>
+  </div>
+  <div class="col-md-6">
+    <img src="/img/intro/history.png" style="max-width: 100%;">
+  </div>
+</div>
+
+<div class="page-header">
+  <h2>Send bitcoin to addresses and other users</h2>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <ul class="lead">
+      <li><strong>Pay no transaction fee</strong> when sending to other MoneyPot users.</li>
+      <li>Pay a 100 bit (0.0001 BTC) transaction fee when sending to an address.</li>
+    </ul>
+  </div>
+  <div class="col-md-6">
+    <img src="/img/intro/send.png" style="max-width: 100%;">
+  </div>
+</div>
+
+<div class="page-header">
+  <h2>Generate unlimited bitcoin addresses</h2>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <ul class="lead">
+      <li>Received bitcoin is added to your balance after <strong>one confirmation</strong>.</li>
+      <li>Attach a memo to each address to remember what you used it for.</li>
+      <li>Generate <span class="label label-info"><span class="glyphicon glyphicon-asterisk"></span> Cold</span> addresses
+         which will go <strong>directly to our cold storage</strong> (rather than our hot wallet).</li>
+    </ul>
+  </div>
+  <div class="col-md-6">
+    <img src="/img/intro/addresses.png" style="max-width: 100%;">
+  </div>
+</div>
+
+<div class="page-header">
+  <h2>Secure your account</h2>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <ul class="lead">
+      <li>Enable <strong>two-factor authentication</strong> if you'd like.</li>
+      <li>Review the time, IP address, and location of every login into your account.</li>
+      <li>See when somebody knows your password but fails at the two-factor authentication stage.</li>
+      <li><strong>Revoke other sessions</strong> that are logged into your account.</li>
+    </ul>
+  </div>
+  <div class="col-md-6">
+    <img src="/img/intro/security.png" style="max-width: 100%;">
+  </div>
+</div>
+
+
+<div class="page-header">
+  <h2>Manage your money on each casino</h2>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <p class="lead">Casino developers can integrate with the MoneyPot API. We call these "apps".</p>
+
+    <ul class="lead">
+      <li><code>Login with Moneypot</code> on any casino that integrates with our API.</li>
+      <li>Casinos will <strong>only</strong> get access to the funds you deposit into them.</li>
+      <li>Done with a casino? Then <strong>withdraw the money</strong> back into your wallet or
+        simply <strong>disable the casino</strong>.</li>
+    </ul>
+
+    <div class="text-center">
+      <a href="/apps" class="btn btn-primary">
+        View approved apps
+      </a>
+      <div class="text-muted">
+        More apps are in development, so check back soon
+      </div>
+    </div>
+
+  </div>
+  <div class="col-md-6">
+    <img src="/img/intro/show-app.png" style="max-width: 100%;">
+  </div>
+</div>
+
+<div class="page-header">
+  <h2>Provably fair betting</h2>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <ul class="lead">
+      <li>Provably fair betting means that we give you a hash of the bet outcome before
+         you make the bet <strong>to prove that we did not cheat</strong>.</li>
+      <li>Any casino that uses our bet API can verify that the bet outcome was <strong>determined before the bet was made</strong>.</li>
+    </ul>
+
+    <div class="text-center">
+      <a href="/provably-fair" class="btn btn-primary">
+        View provably-fair docs
+      </a>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <img src="/img/intro/provably-fair-api.png" style="max-width: 100%;">
+  </div>
+</div>
+
+  </div><!-- /.tab-pane #for-users-->
+
+<!-- For casino developers -->
+
+  <div role="tabpanel" class="tab-pane" id="for-developers">
+
+<div class="page-header">
+  <h2>Create a casino (server optional)</h2>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <ul class="lead">
+      <li>Handle all user authentication with a single "Login with MoneyPot" button.</li>
+      <li>Choose your own house edge.</li>
+      <li>Of course, you can use your own server and database if you want.</li>
+      <li>
+        <strong>Untitled Dice</strong> is an open-source dice script that uses MoneyPot. Check it out!
+        <ul>
+          <li>
+            <a href="https://untitled-dice.github.io">Live demo</a>
+          </li>
+          <li>
+            <a href="https://github.com/untitled-dice/untitled-dice.github.io">
+              Source code
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  <div class="col-md-6">
+    <img src="/img/intro/bet-box.png" style="max-width: 100%;">
+  </div>
+
+</div>
+
+<div class="page-header">
+  <h2>Simple gambling API</h2>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <ul class="lead">
+      <li>We handle the math, bitcoin interaction, and user authentication for you.</li>
+      <li>Use our dice API or <strong>implement a custom game</strong> using our low-level bet API.</li>
+    </ul>
+
+    <div class="text-center">
+      <a href="/api-docs" class="btn btn-primary">
+        View API docs
+      </a>
+      <div class="text-muted">
+        Our docs are a work-in-progress
+      </div>
+    </div>
+
+  </div>
+  <div class="col-md-6">
+    <img src="/img/intro/api-cloud.png" style="max-width: 100%;">
+  </div>
+</div>
+
+<div class="page-header">
+  <h2>Integrated chat server</h2>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <ul class="lead">
+      <li><strong>Foster and grow your own community</strong> with a chat system.</li>
+      <li>Hook up to our websocket chat API and run your own chatbox.</li>
+      <li><strong>You have the control</strong>. Appoint mods, mute trolls.</li>
+    </ul>
+  </div>
+  <div class="col-md-6">
+    <img src="/img/intro/chat-box.png" style="max-width: 100%;">
+  </div>
+</div>
+
+<div class="page-header">
+  <h2>Our bankroll is your bankroll</h2>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <ul class="lead">
+      <li><strong>Risk-free profit</strong>: Make money without risking your own funds.</li>
+      <li>You have access to the <strong>global MoneyPot bankroll</strong>.</li>
+      <li>The MoneyPot API accepts any bet that satisfies <a href="http://en.wikipedia.org/wiki/Kelly_criterion">Kelly</a>
+         +EV for investors and casinos.</li>
+    </ul>
+  </div>
+  <div class="col-md-6 text-center">
+    <img src="/img/intro/safe.png" style="max-width: 100%;">
+  </div>
+</div>
+
+<div class="page-header">
+  <h2>Free faucet</h2>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <ul class="lead">
+      <li>Use our faucet API so that anybody can <strong>try your casino for free</strong>.</li>
+      <li>Let us focus on preventing faucet abuse so that you don't have to.</li>
+    </ul>
+  </div>
+  <div class="col-md-6 text-center">
+    <img src="/img/intro/faucet.png" style="max-width: 100%;">
+  </div>
+</div>
+
+<div class="page-header">
+  <h2>Have a voice in the future of MoneyPot</h2>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <ul class="lead">
+      <li>We want to build the tools that you need. We're always open to feedback.</li>
+      <li>Have a feature that you'd like our API to support? Let us know.</li>
+    </ul>
+  </div>
+  <div class="col-md-6">
+  </div>
+</div>
+
+  </div><!-- /.tab-pane #for-developers-->
+
+
+</div> <!-- /.tab-content-->
+
+{% endblock %}

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Bootstrap core CSS -->
+    <link href="/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="/vendor/bootstrap/css/bootstrap-theme.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container" style="margin-top: 10px;">
+
+      <div class="page-header" style="margin-top: 10px;">
+        <h4>
+          Deposit into <u>{{ app.name }}</u>
+          <small class="pull-right">
+            <a href="/dialog/withdraw?app_id={{ app.id }}">Withdraw</a>
+          </small>
+        </h4>
+        {% if !app.verified_domain %}
+          <span class="label label-danger">Domain Not Verified</span>
+        {% endif %}
+      </div>
+
+      <!-- Remind user of the risk -->
+      <div class="alert alert-warning">
+        <strong>Reminder:</strong>
+        <p>
+          Once you deposit money into this app, it is in full possession of that money until you withdraw it back into your Moneypot wallet.
+        </p>
+        <p><a href="/faq#what-does-it-mean-to-deposit-money-into-an-app-what-is-my-app-balance-" target="_blank">Read more about this risk</a></p>
+      </div>
+
+      <div class="text-center">
+        Move funds from wallet to app
+      </div>
+
+      <!-- Wallet->App balance transfer -->
+      <div class="panel panel-default">
+        <div class="panel-body" style="padding: 5px;">
+
+          {% if ctx.flash.message %}
+            <div class="alert alert-{{ ctx.flash.message[0] }}"
+                 style="padding: 5px;">
+              {{ ctx.flash.message[1] }}
+            </div>
+          {% endif %}
+
+          <p>
+            Your wallet has <b>{{ ctx.currUser.balance|formatSatoshis }} bits</b>
+
+            <button type="button" class="btn btn-link btn-xs"
+                    id="deposit-all-btn">
+              Deposit All
+            </button>
+          </p>
+
+          <form method="post" action="/me/auths/{{ auth.id }}/fund">
+            <input type="hidden" name="redirectTo"
+                   value="/dialog/deposit?app_id={{ app.id }}">
+            <input type="hidden" name="direction" value="deposit">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="bits"
+                     id="deposit-input"
+                     name="amount">
+              <span class="input-group-btn">
+                <button type="submit"
+                        class="btn btn-default"
+                        id="deposit-btn"
+                >
+                  Deposit
+                </button>
+              </span>
+            </div><!-- /.input-group -->
+          </form>
+
+        </div><!-- /.panel-body -->
+      </div><!-- /.panel -->
+
+      <!-- Address deposit panel (QR code and address) -->
+
+      <div class="text-center">
+        Deposit directly into app
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-body" style="padding: 5px;">
+          <div class="media">
+            <div class="media-left media-middle">
+              <img src="https://blockchain.info/qr?data={{ address }}&size=75"
+                   class="media-object"
+                   height=75
+                   width=75
+                   >
+            </div>
+            <div class="media-body">
+              <code style="display: block; margin-top: 15px;">
+                {{ address }}
+              </code>
+              <p class="text-muted">
+                <small>Refresh balance after next block is mined</small>
+              </p>
+            </div> <!-- /.media-body -->
+          </div> <!-- /.media -->
+        </div> <!-- /.panel-body -->
+      </div> <!-- /.panel -->
+
+    </div> <!-- /.container -->
+
+    <!-- Scripts -->
+
+    <script src="/vendor/jquery/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript">
+      $('#deposit-all-btn').on('click', function() {
+        $('#deposit-input').val({{ belt.floor10(ctx.currUser.balance/100, -2) }})
+      });
+
+      {% if didBalanceUpdate %}
+        window.opener.postMessage('UPDATE_BALANCE', '*');
+      {% endif %}
+    </script>
+
+  </body>
+</html>

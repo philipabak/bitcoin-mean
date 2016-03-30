@@ -1,0 +1,16 @@
+{# For use on /login?app_id=_ and /register?app_id=_ #}
+
+{% macro renderOnboardingPanel(app) %}
+  <div class="panel panel-default">
+
+    <div class="panel-heading">
+      <h4>What is this?</h4>
+    </div>
+
+    <div class="panel-body">
+      <p>In order to use {{ app.name }}, you must either login or register an account with MoneyPot.</p>
+      <p>You will then be able to deposit Bitcoin into your MoneyPot account and spend them at {{ app.name }}.</p>
+    </div>
+
+  </div>
+{% endmacro %}

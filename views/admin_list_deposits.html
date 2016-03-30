@@ -1,0 +1,40 @@
+{% extends 'profile_layout.html' %}
+
+{% block profileTabContent %}
+<div class="page-header">
+  <h1>Deposits</h1>
+</div>
+
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>id</th>
+      <th>uname</th>
+      <th>txid</th>
+      <th>address</th>
+      <th>amount</th>
+      <th>cold</th>
+      <th>created</th>
+    </tr>
+  </thead>
+  {% for deposit in deposits %}
+    <tr>
+      <td>{{ deposit.id }}</td>
+      <td><a href="/users/{{ deposit.uname }}">{{ deposit.uname }}</a></td>
+      <td><a href="https://blockchain.info/tx/{{ deposit.txid }}/{{deposit.vout}}">{{ deposit.txid.substring(0, 8) }}...</a></td>
+      <td><a href="https://blockchain.info/address/{{ deposit.address }}">{{ deposit.address }}</a></td>
+      <td>{{ deposit.amount|formatSatoshis }} bits</td>
+      <td>{{ deposit.cold }}</td>
+      <td>{{ deposit.created_at|formatDate  }}</td>
+    </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+  $("abbr.timeago").timeago();
+</script>
+{% endblock %}

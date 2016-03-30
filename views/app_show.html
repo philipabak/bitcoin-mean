@@ -1,0 +1,260 @@
+{% extends 'app_layout.html' %}
+
+{% block appContents %}
+
+<!-- Go-to-app button -->
+
+
+<div class="panel panel-default">
+  <div class="panel-body">
+    {% if ctx.currUser %}
+      {% if auth && auth.enabled %}
+        <form action="/oauth/authorize" method="post">
+	        <input type="hidden" name="app_id" value="{{ app.id }}">
+          <button type="submit" class="btn btn-info">
+            Go to {{ app.name }} and login &rarr;
+          </button>
+          You will be redirected to <code>{{ app.redirect_uris[0] || belt.defaultRedirectUri }}</code>
+        </form>
+      {% else %}
+        <button type="submit" class="btn btn-default" disabled>
+          Go to {{ app.name }} and login &rarr;
+        </button>
+        <span class="text-muted">You must enable this app first</span>
+      {% endif %}
+    {% else %}
+      <button type="type" class="btn btn-default" disabled>
+        Go to {{ app.name }} and login &rarr;
+      </button>
+      <span class="text-muted">
+        You must <a href="/login">login</a> or <a href="/register">register</a> with MoneyPot to use this app
+      </span>
+    {% endif %}
+  </div>
+</div>
+
+{% if auth %}
+  <div class="panel panel-default">
+    <div class="panel-body">
+
+      <div class="alert alert-warning">
+        <strong>Reminder:</strong>
+        <p>
+          Any money you deposit into an app gives it full control over that balance.
+        </p>
+        <p>
+          When an app is enabled, you are allowing this app to access the money you deposit into it until you either disable the app or withdraw the app balance back into your Moneypot wallet.
+        </p>
+        <p><a href="/faq#what-does-it-mean-to-deposit-money-into-an-app-what-is-my-app-balance-" target="_blank">Read more about this risk</a></p>
+      </div>
+
+      <p class="lead">
+        Your current balance at {{ app.name }} is
+        <strong>{{ auth.balance|formatSatoshis}} bits</strong>
+        {% if !auth.enabled %}
+          <br><span class="text-danger small">The app cannot spend this balance since it is disabled</span>
+        {% endif %}
+      </p>
+
+
+      <form method="post" action="/me/auths/{{ auth.id }}/fund">
+        <div class="input-group">
+          <input type="number" name="amount" class="form-control" placeholder="bits" step="0.01" min="0.01" required>
+          <span class="input-group-btn">
+            <button class="btn btn-default"
+                    type="submit"
+                    name="direction"
+                    data-toggle="tooltip"
+                    title="Wallet to App"
+                    value="deposit">Deposit</button>
+            <button class="btn btn-default"
+                    type="submit"
+                    name="direction"
+                    data-toggle="tooltip"
+                    title="App to Wallet"
+                    value="withdraw">Withdraw</button>
+          </span>
+        </div><!-- /input-group -->
+        <p class="text-right help-block">
+          Note:
+          You have <strong>{{ ctx.currUser.balance|formatSatoshis }} bits</strong> in your MoneyPot wallet, so that's the max amount you can deposit</p>
+      </form>
+
+    </div><!-- /panel-body -->
+  </div><!-- /panel -->
+{% endif %}
+
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">{{ app.name }} Info</h3>
+	</div>
+	<div class="panel-body">
+
+  <ul class="nav nav-tabs" role="tablist" style="margin-bottom: 20px">
+    <li class="active">
+      <a href="#stats" aria-controls="stats" role="tab" data-toggle="tab">
+        Stats
+      </a>
+    </li>
+    <li>
+      <a href="#staff" aria-controls="staff" role="tab" data-toggle="tab">
+        Staff
+      </a>
+    </li>
+  </ul>
+
+  <!-- Tab content -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="stats">
+      <table class="table">
+        <tr><th>Bets</th><td>{{ stats.bets|formatNumber }} </td></tr>
+        <tr><th>Wagered</th><td>{{ stats.wagered|formatSatoshis }} bits</td></tr>
+        <tr><th>Bets Profit</th>
+          <td>{{ stats.profit|formatSatoshis }} bits
+            {% if stats.profit != 0 %}  ({{ (stats.profit/stats.wagered*100).toFixed(2) }}%)  {% endif %}
+          </td>
+        </tr>
+        <tr><th>Expected Profit</th>
+          <td>
+            {{ stats.ev|formatSatoshis }} bits
+            {% if stats.ev != 0 %} ({{ (stats.ev/stats.wagered*100).toFixed(2) }}%)  {% endif %}
+
+          </td></tr>
+      </table>
+    </div><!-- /stats-table tab content -->
+    <div role="tabpanel" class="tab-pane" id="staff">
+
+      {% if ctx.currUserStaffRecord && ctx.currUserStaffRecord.role === 'OWNER' %}
+        Since you're one of the app owners, you can
+        <a href="/apps/{{ app.id }}/staff" class="btn btn-default btn-xs">
+          Manage Staff
+        </a>
+      {% endif %}
+
+      {% if activeStaff.length === 0 %}
+        <div class="alert alert-info">
+          This app has no staff
+        </div>
+      {% endif %}
+
+      {% if activeStaff.length > 0 %}
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Role</th>
+              <th>Appointed At</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in activeStaff %}
+              <tr>
+                <!-- Username -->
+                <td>
+                  <a href="{{ user.url }}">
+                    {{ user.uname }}
+                  </a>
+                </td>
+                <!-- Role -->
+                <td>
+                  {{ user.role }}
+                </td>
+                <!-- Appointed At -->
+                <td>
+                  <abbr class="timeago" title="{{ user.created_at.toISOString() }}">
+                    {{ user.created_at|formatDate }}
+                  </abbr>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
+
+    </div>
+  </div>
+
+
+
+	</div>
+</div>
+
+  <h3>Bet History (Last 100 bets)</h3>
+
+  <p>All the latest bets for {{ app.name }} appear in this table</p>
+
+  <table class="table">
+    <thead>
+    <tr>
+      <th>Bet Id</th>
+      <th>Kind</th>
+      <th>Player</th>
+      <th>Wager</th>
+      <th>Player Profit</th>
+      <!-- <th>App Profit</th> -->
+      <th>When</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for bet in bets %}
+      <tr>
+        <td>
+          <a href="/bets/{{ bet.id }}">{{ bet.id }}</a>
+        </td>
+        <td>{{ bet.kind }}</td>
+        <td>
+          <a href="{{ bet.user.url }}">{{ bet.user.uname }}</a>
+        </td>
+        <td>{{ bet.wager | formatSatoshis}} bits</td>
+        <td>
+          {% if bet.profit > 0 %}
+            <span style="color: green;">
+              +{{ bet.profit|formatSatoshis }} bits
+            </span>
+          {% else %}
+            <span style="color: red;">
+            {{ bet.profit|formatSatoshis }} bits
+            </span>
+          {% endif %}
+        </td>
+        <td>
+          <abbr class="timeago" title="{{ bet.created_at.toISOString() }}">
+            {{ bet.created_at|formatDate }}
+          </abbr>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+
+  </table>
+
+
+  {#
+
+       ADMIN SECTION
+
+  #}
+
+  {% if ctx.currUser && ctx.currUser.role === 'admin' %}
+
+    <div class="panel panel-warning">
+      <div class="panel-heading">
+        Admin Panel
+      </div>
+
+      <div class="panel-body">
+
+        <!-- app.verified_domain -->
+
+        <form action="{{ app.url }}/verified-domain" method="POST">
+          Verified Domain:
+          <input type="text" name="domain" value="{{ app.verified_domain }}" placeholder="http://">
+          <button type="submit">Save</button>
+        </form>
+
+      </div>
+    </div>
+
+  {% endif %}
+
+{% endblock %}

@@ -1,0 +1,138 @@
+{% extends 'profile_layout.html' %}
+
+{% block profileTabContent %}
+
+<div class="page-header">
+  <h1>Settings</h1>
+</div>
+
+{% if !ctx.currUser.email %}
+  <div class="alert alert-warning" role="alert">
+    <strong>Warning!</strong> You have not yet associated an email address with your account. If you ever forget your password, then you will not be able to recover your account.
+  </div>
+{% endif %}
+
+<!-- Edit email -->
+
+<form action="/me/settings/email" method="post">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Edit Email</h3>
+    </div>
+    <div class="panel-body">
+      <input type="hidden" name="_method" value="put">
+      <input type="email"
+             class="form-control"
+             name="email"
+             value="{{ (ctx.flash.params && ctx.flash.params.email) || ctx.currUser.email }}">
+	    {% if ctx.flash.params && ctx.flash.params.email %}
+	    <p class="help-block">
+		    Your current email is: <code>{{ ctx.currUser.email }}</code>
+	    </p>
+	    {% endif %}
+    </div>
+
+
+	  <div class="panel-body">
+		  <label>Confirm Current Password:</label>
+		  <input type="password" class="form-control" name="password"
+		         value="{{ ctx.flash.params && ctx.flash.params.password }}">
+	  </div>
+    <div class="panel-footer text-right">
+      <!-- 2FA passcode -->
+      {% if ctx.currUser.mfa_key %}
+        <input type="text"
+               style="width: 200px; display: inline-block;"
+               class="form-control"
+               placeholder="6-digit 2FA passcode"
+               id="passcode"
+               name="passcode" required>
+      {% endif %}
+      <input type="submit" value="Update Email" class="btn btn-primary">
+    </div>
+  </div> <!-- /.panel -->
+</form>
+
+<!-- Edit password -->
+
+<form action="/me/settings/password" method="post">
+  <input type="hidden" name="_method" value="put">
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Edit Password</h3>
+    </div>
+
+    <!-- old_password -->
+    <div class="panel-body">
+      <label>Confirm Current Password:</label>
+      <input type="password" class="form-control" name="password"
+             value="{{ ctx.flash.params && ctx.flash.params.password }}">
+    </div>
+
+    <!-- new_password1 -->
+    <div class="panel-body">
+      <label>New Password:</label>
+      <input type="password" class="form-control" name="new_password1"
+             value="{{ ctx.flash.params && ctx.flash.params.new_password1 }}">
+    </div>
+
+    <!-- new_password2 -->
+    <div class="panel-body">
+      <label>Confirm New Password:</label>
+      <input type="password" class="form-control" name="new_password2"
+             value="{{ ctx.flash.params && ctx.flash.params.new_password2 }}">
+    </div>
+
+    <div class="panel-footer text-right">
+      <button type="submit" class="btn btn-primary">
+        Update Password
+      </button>
+    </div>
+  </div> <!-- /.panel -->
+</form>
+
+<!-- Proof of liabilities -->
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Proof of Liabilities</h3>
+    </div>
+    <div class="panel-body">
+      <p>To demonstrate solvency, MoneyPot provides a proof of liabilities.
+      <p>The proof contains the balance and amount invested of all users with non-zero values.</p>
+      <p>For privacy, all usernames are hashed with a nonce. You can validate that your username is available in this proof by searching for your user hash.
+      </p>
+
+      {% if !proofOfLiability %}
+        <p class="text-danger">Your account was not included in the latest proof of liabilities.</p>
+      {% endif %}
+
+      {% if proofOfLiability %}
+        <div class="well well-sm">
+          <ul>
+            <li>
+              Your daily nonce: <code>{{ proofOfLiability.nonce || 'N/A' }}</code>
+            </li>
+            <li>
+              Your user hash:
+              <span class="text-muted">
+                <code class="text-muted">sha256('{{ ctx.currUser.uname }}|{{ proofOfLiability.nonce || 'N/A' }}')</code> &rarr;
+              </span>
+              <code>{{ proofOfLiability.hash }}</code>
+            </li>
+          </ul>
+        </div>
+      {% endif %}
+
+    </div>
+    <div class="panel-footer text-right">
+        <span class="text-muted">Updated every 24 hours</span>
+        <a href="/proof-of-liabilities.txt" class="btn btn-primary">View Proof of Liabilities</a>
+    </div><!-- /panel-footer -->
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

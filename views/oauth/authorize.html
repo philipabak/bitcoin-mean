@@ -1,0 +1,89 @@
+{% extends '../master.html' %}
+
+{% block embed %}
+<div class="page-header">
+  <h1>Review Your <strong style="text-decoration: underline;">{{ app.name }}</strong> Authorization</h1>
+</div>
+
+{% if errorMessage %}
+  <div class="alert alert-danger" role="alert">{{ errorMessage|safe }}</div>
+{% endif %}
+
+{% if !errorMessage %}
+<div class="row">
+  <div class="col-sm-8 col-sm-offset-2">
+
+    <p>
+      {% if !app.verified_domain %}
+        <span class="label label-danger">Domain Not Verified</span>
+        <span class="text-danger">We have not yet verified this app's authenticity.</span>
+      {% endif %}
+
+	    {% if app.disabled_at %}
+            <span class="label label-warning">
+              App has been disabled
+            </span>
+	    {% endif %}
+    </p>
+
+    <form action="/oauth/authorize" method="post" class="form-horizontal">
+      <input type="hidden" name="app_id" value="{{ app.id }}">
+      <input type="hidden" name="state" value="{{ oauth.state }}">
+      <input type="hidden" name="response_type" value="{{ oauth.response_type }}">
+      <input type="hidden" name="redirect_uri" value="{{ oauth.redirect_uri }}">
+
+      <div class="panel panel-default">
+        <!-- PANEL BODY -->
+        <div class="panel-body">
+
+          <!-- Warning -->
+
+          <div class="alert alert-warning">
+            <strong>Reminder:</strong>
+            <p>
+              Any money you deposit into an app gives it full control over that balance.
+            </p>
+            <p>
+              By pressing <strong>"Enable and Continue"</strong>, you are allowing this app to access the money you deposit into it until you either disable the app or withdraw the app balance back into your Moneypot wallet.
+            </p>
+            <p><a href="/faq#what-does-it-mean-to-deposit-money-into-an-app-what-is-my-app-balance-" target="_blank">Read more about this risk</a></p>
+          </div>
+
+          <p class="lead">
+            You currently have
+            <strong>{{ auth.balance|formatSatoshis }} bits</strong>
+            deposited in {{ app.name }}.
+          </p>
+
+        </div> <!-- /.panel-body -->
+        <!--
+            PANEL FOOTER
+            -->
+        <div class="panel-footer">
+          <div class="text-right">
+            <a href="/" class="btn btn-default">Cancel</a>
+            <button id="login-submit"
+                    type="submit"
+                    class="btn btn-primary"
+            >
+              {% if !auth.enabled %}
+                Enable and
+              {% endif %}
+              Continue to {{ app.name }}
+            </button>
+            <p style="margin-top: 10px;">You will be redirected to the app's redirect_uri: <code>{{ oauth.redirect_uri }}</code></p>
+          </div>
+        </div> <!-- /.panel-footer -->
+      </div> <!-- /.panel -->
+    </form>
+  </div> <!-- /col -->
+</div> <!-- /.row -->
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  $('#budget-input').val($('#budget-input').val()).focus();
+</script>
+{% endblock %}

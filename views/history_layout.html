@@ -1,0 +1,212 @@
+{% extends 'profile_layout.html' %}
+
+{% block profileTabContent %}
+
+<div class="page-header">
+  <div class="pull-right">
+    Filter:
+    <div class="btn-group" role="group" aria-label="...">
+      {% for filterName in ['all', 'deposits', 'withdrawals', 'sends', 'receives', 'bets', 'faucets', 'investments'] %}
+      <a href="/me/history/{{ filterName }}" class="btn btn-default {% if ctx.path.endsWith('/' + filterName) %}active{% endif %}">
+        {{ filterName|capitalize }}
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <h1>History</h1>
+</div>
+
+
+{# Only show table if a tx exists #}
+{% if history.length === 0%}
+  <div class="well">
+    Once you start using MoneyPot, you will be able to audit your transactions here.
+  </div>
+{% else %}
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>When</th>
+        <th colspan="2">Amount</th>
+        <th>Info</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in history %}
+    <tr>
+        <td>
+            <abbr class="timeago" title="{{ item.created_at.toISOString() }}">
+                {{ item.created_at|formatDate }}
+            </abbr>
+        </td>
+
+        {% if item.history_type === 'send' %}
+        <td style="text-align: right">
+            <span style="color: red">-{{ item.payload.amount|formatSatoshis(2) }} bits</span>
+        </td>
+        <td></td>
+        <td>
+            <span class="label label-default">Send. To user:</span>
+            <a href="/users/{{ item.payload.to_user_uname }}">
+              {{ item.payload.to_user_uname }}
+            </a>
+            {% if item.payload.memo %}
+            <div class="text-muted">
+                <span class="glyphicon glyphicon-pushpin"></span> {{ item.payload.memo }}
+            </div>
+            {% endif %}
+        </td>
+        {% elseif item.history_type === 'receive' %}
+        <td style="text-align: right">
+            <span style="color: green">+{{ item.payload.amount|formatSatoshis(2) }} bits</span>
+        </td>
+        <td></td>
+        <td>
+            <span class="label label-default">Receive. From user:</span>
+            <a href="/users/{{ item.payload.from_user_uname }}">
+              {{ item.payload.from_user_uname }}
+            </a>
+        </td>
+        {% elseif item.history_type === 'withdrawal' %}
+        <td style="text-align: right">
+            <span style="color: red">-{{ item.payload.amount|formatSatoshis(2) }} bits</span>
+        </td>
+        <td><span class="text-muted">-{{ item.payload.fee|formatSatoshis }} tx bit fee</span></td>
+        <td>
+            <span class="label label-default">Withdrawal:</span>
+
+            <a href="/withdrawals/{{ item.payload.id }}">
+                to
+                <code>{{ item.payload.to_address }}</code>
+            </a>
+            {% if !item.payload.txid %}
+            <span class="label label-warning">processing</span>
+            {% endif %}
+            {% if item.payload.memo %}
+            <div class="text-muted">
+                <span class="glyphicon glyphicon-pushpin"></span> {{ item.payload.memo }}
+            </div>
+            {% endif %}
+        </td>
+
+        {% elseif item.history_type === 'deposit' %}
+        <td style="text-align: right">
+            <span style="color: green">+{{ item.payload.amount|formatSatoshis(2) }} bits</span>
+        </td>
+        <td>{% if item.payload.fee %} <span class="text-muted">-{{ item.payload.fee|formatSatoshis }} bit fee</span> {% endif %}</td>
+        <td>
+            {% if !item.payload.confirmed %}
+            <span class="label label-danger">Unconfirmed deposit to address:</span>
+            {% else %}
+            <span class="label label-default">Deposit. To address:</span>
+            {% endif %}
+
+            <a href="https://blockchain.info/tx/{{ item.payload.txid }}/{{ item.payload.vout }}">
+              <code>{{ item.payload.address.address }}</code><span class="glyphicon glyphicon-new-window"></span>
+            </a>
+
+
+            {% if item.payload.address.cold %}
+            <span class="label label-info"><span class="glyphicon glyphicon-asterisk"></span> Cold Address</span>
+            {% endif %}
+
+            {% if item.payload.address.memo %}
+            <div class="text-muted">
+                <span class="glyphicon glyphicon-pushpin"></span> {{ item.payload.address.memo }}
+            </div>
+            {% endif %}
+
+        </td>
+        {% elseif item.history_type === 'bet' %}
+        <td style="text-align: right">
+            {% if item.payload.bet.profit > 0 %}
+                <span style="color: green">+{{ item.payload.bet.profit|formatSatoshis(2) }} bits</span>
+            {% else %}
+                <span style="color: red">{{ item.payload.bet.profit|formatSatoshis(2) }} bits</span>
+            {% endif %}
+        </td>
+        <td></td>
+        <td>
+            <span class="label label-default">{{ item.payload.bet.kind }} bet</span> of {{ item.payload.bet.wager|formatSatoshis(2) }} bits
+            on
+            <a href="/apps/{{ belt.slugify(item.payload.app_id, item.payload.app_name) }}">
+              {{ item.payload.app_name }}
+            </a>
+
+        </td>
+        {% elseif item.history_type === 'investment' %}
+        <td style="text-align: right">
+          {% if item.payload.amount < 0 %}
+          <span style="color: green">+{{ (-item.payload.amount)|formatSatoshis(2) }} bits</span>
+          {% else %}
+          <span style="color: red">{{ (-item.payload.amount)|formatSatoshis(2) }} bits</span>
+          {% endif %}
+        </td>
+        <td></td>
+        <td>
+          {% if item.payload.amount > 0 %}
+            <span class="label label-default">Bankroll Invest</span>
+          {% else %}
+            <span class="label label-default">Bankroll Divest</span>
+          {% endif %}
+        </td>
+
+	    {% elseif item.history_type === 'faucet' %}
+	    <td style="text-align: right">
+		    <span style="color: green">+{{ (item.payload.amount)|formatSatoshis(2) }} bits</span>
+	    </td>
+	    <td></td>
+	    <td>
+
+		    <span class="label label-default">Faucet Claim</span> of {{ (item.payload.amount)|formatSatoshis(2) }}
+		    bits on
+		    <a href="/apps/{{ belt.slugify(item.payload.app_id, item.payload.app_name) }}">
+			    {{ item.payload.app_name }}
+		    </a>
+	    </td>
+
+	    {% elseif item.history_type === 'send_tip' %}
+	    <td style="text-align: right">
+		    <span style="color: red">-{{ (item.payload.amount)|formatSatoshis(2) }} bits</span>
+	    </td>
+	    <td></td>
+	    <td>
+
+		    <span class="label label-default">Send Tip</span> of {{ (item.payload.amount)|formatSatoshis(2) }}
+		    bits on
+		    <a href="/apps/{{ belt.slugify(item.payload.app_id, item.payload.app_name) }}">
+			    {{ item.payload.app_name }}
+		    </a> to {{ item.payload.to_uname }}
+	    </td>
+
+	    {% elseif item.history_type === 'receive_tip' %}
+	    <td style="text-align: right">
+		    <span style="color: green">+{{ (item.payload.amount)|formatSatoshis(2) }} bits</span>
+	    </td>
+	    <td></td>
+	    <td>
+		    <span class="label label-default">Receive Tip</span> of {{ (item.payload.amount)|formatSatoshis(2) }}
+		    bits on
+		    <a href="/apps/{{ belt.slugify(item.payload.app_id, item.payload.app_name) }}">
+			    {{ item.payload.app_name }}
+		    </a> from {{ item.payload.from_uname }}
+	    </td>
+
+	    {% endif %}
+
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+  $("abbr.timeago").timeago();
+</script>
+{% endblock %}

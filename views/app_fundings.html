@@ -1,0 +1,147 @@
+{% extends 'app_layout.html' %}
+
+{% block appContents %}
+
+<div class="panel panel-default">
+  <div class="panel-body text-center">
+    <p class="lead">
+      <strong>App Balance:</strong> {{ app.balance|formatSatoshis }} bits
+    </p>
+  </div>
+</div>
+
+<p>
+  As your app makes money, Moneypot automatically deposits your commission into your app funds. Use the <strong>Withdraw</strong> form below to move your earnings into your wallet.
+</p>
+
+<div class="row">
+
+  <div class="col-md-6">
+    <div class="panel panel-default">
+
+      <div class="panel-heading">
+        Withdraw
+      </div>
+
+      <div class="panel-body">
+
+        <!-- panel body -->
+
+        <p>Move app funds into your Moneypot wallet</p>
+
+        <form action="/apps/{{ app.id }}/fundings/withdraw" method="post">
+
+          <div class="input-group">
+            <input type="number" name="bits" class="form-control" placeholder="bits" step="0.01" min="0.01" required>
+            <span class="input-group-btn">
+              <button class="btn btn-default"
+                      type="submit"
+                      data-toggle="tooltip"
+                      title="App to Wallet"
+                      value="withdraw">Withdraw</button>
+            </span>
+          </div><!-- /input-group -->
+        </form>
+
+        <div class="text-center text-muted" style="margin-top: 10px; margin-bottom: 10px;">
+          OR
+        </div>
+
+        <form action="/apps/{{ app.id }}/fundings/withdraw" method="post">
+          <input type="hidden" name="bits" value="{{ belt.floor10(app.balance/100, -2) }}">
+          <div class="text-center">
+            <button class="btn btn-default"
+                    type="submit">
+              Withdraw All
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Deposit
+      </div>
+      <div class="panel-body">
+        <!-- panel body -->
+
+        <p>Move bits from your wallet into this app</p>
+
+        <form action="/apps/{{ app.id }}/fundings/deposit" method="post">
+
+          <div class="input-group">
+            <input type="number" name="bits" class="form-control" placeholder="bits" step="0.01" min="0.01" required>
+            <span class="input-group-btn">
+              <button class="btn btn-default"
+                      type="submit"
+                      data-toggle="tooltip"
+                      title="Wallet to App">
+                Deposit
+              </button>
+            </span>
+          </div><!-- /input-group -->
+        </form>
+      </div><!-- panel-body -->
+    </div><!-- panel -->
+  </div><!-- col -->
+
+</div><!-- /row -->
+
+<!-- fundings history -->
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    Fundings history
+  </div>
+
+  <div class="panel-body">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Amount</th>
+          <th>When</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for funding in fundings %}
+          <tr>
+            <!-- Username -->
+            <td>
+              <a href="/users/{{ funding.uname }}">
+                {{ funding.uname }}
+              </a>
+            </td>
+            <!-- Amount -->
+            <td>
+              {% if funding.amount > 0 %}
+                <span style="color: green;">
+                  +{{ funding.amount|formatSatoshis }} bits
+                </span>
+                <span class="label label-success">Deposit</span>
+              {% else %}
+                <span style="color: red;">
+                  {{ funding.amount|formatSatoshis }} bits
+                </span>
+                <span class="label label-danger">Withdraw</span>
+              {% endif %}
+            </td>
+            <!-- When -->
+            <td>
+              <abbr class="timeago" title="{{ funding.created_at.toISOString() }}">
+                {{ funding.created_at|formatDate }}
+              </abbr>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+{% endblock %}

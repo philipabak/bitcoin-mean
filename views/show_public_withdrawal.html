@@ -1,0 +1,64 @@
+{% extends 'master.html' %}
+
+{% block embed %}
+
+<!-- Crumbs -->
+
+<ol class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li>Withdrawals</li>
+    <li class="active">Withdrawal {{ bet.id }}</li>
+</ol>
+
+<!-- Page header -->
+
+<div class="page-header">
+    <h1>Withdrawal Info</h1>
+</div>
+
+<ul>
+    <li><strong>To:</strong> <a href="https://blockchain.info/address/{{ withdrawal.to_address }}">{{ withdrawal.to_address }}</a></li>
+    <li><strong>Txid:</strong>
+        {% if withdrawal.txid %}
+          <a href="https://blockchain.info/tx/{{ withdrawal.txid }}">{{ withdrawal.txid }}</a>
+        {% else %}
+        <span class="label label-warning">none generated yet</span>
+        {% endif %}
+    </li>
+    <li><strong>Status:</strong>
+        {% if withdrawal.status === 'queued' %}
+            <span class="label label-default">Queued</span>
+        {% elif withdrawal.status === 'in_progress' %}
+            <span class="label label-primary">In Process</span> (Please refresh for updates)
+        {% elif withdrawal.status === 'unknown_error' %}
+            <span class="label label-danger">Errored</span>
+            (Please <a href="/support">contact support</a> ASAP if you wish to have it canceled, otherwise it'll be sent soon)
+        {% elif withdrawal.status === 'failed' %}
+            <span class="label label-danger">Failed due to not enough hot wallet funds</span>
+            (Please <a href="/support">contact support</a> ASAP if you wish to have it canceled, otherwise it'll be sent soon)
+        {% elif withdrawal.status === 'success' %}
+           <span class="label label-success">Success</span>
+        {% else %}
+           <span class="label label-warning">Unknown</span> please <a href="/support">contact support</a></span>
+        {% endif %}
+
+
+    </li>
+    <li><strong>Time: </strong>  <abbr class="timeago" title="{{ withdrawal.created_at.toISOString() }}">
+        {{ withdrawal.created_at|formatDate }}
+    </abbr></li>
+</ul>
+
+
+{% if ctx.currUser.role === 'admin' %}
+<h4>Debug information: (Admins only)</h4>
+<pre>{{ JSON.stringify(withdrawal, null, 2) }}</pre>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+    $('.timeago').timeago();
+</script>
+{% endblock %}

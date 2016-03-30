@@ -1,0 +1,272 @@
+{% extends 'profile_layout.html' %}
+
+{% block profileTabContent %}
+
+<div class="page-header">
+
+  <h1>Investment</h1>
+
+  {# Only show investment warning to logged-in users #}
+  {% if ctx.currUser %}
+    <p>
+      <span class="label label-warning">Reminder</span>
+      Never invest more than you are willing to lose, and <em>do not invest unless you clearly understand the risks and rewards.</em>
+    </p>
+  {% endif %}
+
+</div>
+
+<!-- Overview panel -->
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-xs-6" style="font-weight: bold;">
+          Site Bankroll:
+          </div>
+        <div class="col-xs-6">
+          {{ bankroll.balance|formatSatoshis }} bits
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-6" style="font-weight: bold;">
+            Wagered against bankroll:
+        </div>
+        <div class="col-xs-6">
+            {{ bankroll.wagered|formatSatoshis }} bits
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-6" style="font-weight: bold;">
+            Investor Profit:
+        </div>
+        <div class="col-xs-6">
+            {{ (bankroll.balance - bankroll.invested)|formatSatoshis }} bits
+        </div>
+      </div>
+
+      <!-- Show user's stake if a user is logged in -->
+
+      {% if ctx.currUser %}
+        <hr>
+        <div class="row">
+          <div class="col-xs-6" style="font-weight: bold;">
+            Your stake:
+          </div>
+          <div class="col-xs-6">
+            {% if stake >= 0.00005 %}
+              {{ (stake*100).toFixed(2) }}
+            {% elseif stake > 0 %}
+              &lt; 0.01
+            {% else %}
+              0
+            {% endif %}%
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-6" style="font-weight: bold;">
+            Your amount:
+          </div>
+          <div class="col-xs-6">
+            {{ (bankroll.balance*stake)|formatSatoshis  }} bits
+          </div>
+        </div>
+      {% endif %}
+
+      </div>
+
+  </div><!--/panel-->
+
+    {% if ctx.currUser %}
+    <p class="text-muted">See <a href="/me/history/investments">your investment history</a></p>
+    {% endif %}
+
+  </div>
+
+  {# Only show invest/divest forms if user is logged in, though they
+     post to an endpoint that also ensures it
+  #}
+
+  {% if ctx.currUser %}
+    <div class="col-md-6">
+
+      <!-- Invest panel -->
+
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Invest</h3>
+        </div>
+        <div class="panel-body">
+          <form action="/me/invest" method="post">
+            Amount: <input name="amount" type="number" step="0.01" min="0.01" placeholder="bits">
+            <input type="submit">
+          </form>
+        </div>
+      </div>
+
+      <!-- Divest panel -->
+
+      <div class="panel {% if lockout %}panel-danger{% else %}panel-default{% endif %}">
+        <div class="panel-heading">
+          <h3 class="panel-title">
+            {% if lockout %}
+              <span class="glyphicon glyphicon-lock"></span>
+            {% endif %}
+            Divest
+          </h3>
+        </div>
+        <div class="panel-body">
+          {% if lockout %}
+            <p style="font-weight: bold;">
+              You locked yourself out of divestment
+              <abbr class="timeago" title="{{ lockout.created_at.toISOString() }}">
+                {{ lockout.created_at|formatDate }}
+              </abbr>
+              and it expires
+              <abbr class="timeago" title="{{ lockout.expired_at.toISOString() }}">
+                {{ lockout.expired_at|formatDate -}}
+              </abbr>.
+            </p>
+            <p>
+              You cannot divest until it expires.
+            </p>
+            <p>
+              Out of respect for your original wishes to be locked out,
+              we will not manually remove your lock. We trust your past-self's
+              judgement.
+            </p>
+          {% else %}
+            <form action="/me/divest" method="post">
+            Amount: <input name="bits" type="number" step="0.01" min="0.01" placeholder="bits" required> <button type="submit" name="amount" value="partial">Divest!</button>
+            </form>
+            <form action="/me/divest" method="post">
+              or <button type="submit" name="amount" value="full" style="display: inline-block">Divest all!</button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Lock panel -->
+
+      {% if !lockout %}
+        <div class="text-center">
+          Want to prevent yourself from divesting?
+          <button type="button" id="toggle-lock-panel" class="btn btn-default btn-xs">
+            Show Lockout Form
+          </button>
+        </div>
+      {% endif %}
+
+      <form id="lockout-form" method="POST" action="/me/divestment-lockouts">
+        <div id="lock-panel" class="panel panel-danger" style="display: none;">
+            <div class="panel-heading">
+              <h3 class="panel-title">Divestment Lockout</h3>
+            </div>
+            <div class="panel-body">
+              <p>
+                If you feel like you're losing control of yourself or your money to gambling,
+                you can use this form to prevent yourself from divesting for a period of time.
+              </p>
+
+              <p class="lead text-center">
+                Lock yourself out for <span id="days-feedback" style="font-weight: bold; text-decoration: underline">0</span> days.
+              </p>
+
+              <input name="days" type="range" min="0" max="60" step="1" list="daysteps" id="days-input" value="0">
+              <datalist id="daysteps">
+                {% for i in Array(61) %}
+                  <option>{{ loop.index0 }}</option>
+                {% endfor %}
+              </datalist>
+
+              <!-- lockout final warning -->
+              <div class="alert alert-danger" id="lockout-final-warning" style="display:none; margin-top: 20px;">
+                <p>
+                  Once you submit the lock, there is no going back.
+                  You must wait the full duration before you can divest.
+                </p>
+                </p>
+                  This feature is only here to help you manage your money
+                  as a last resort and we will respect the wishes of your past-self
+                  no matter what your future-self says.
+                </p>
+              </div>
+
+            </div><!-- /panel-body -->
+            <div class="panel-footer text-right">
+
+              <!-- Password -->
+              <div style="display: inline-block;">
+                Password:
+                <input type="password"
+                      placeholder="Current password"
+                      style="width: 200px; display: inline-block;"
+                      name="password"
+                      class="form-control"
+                >
+              </div>
+
+              <button type="submit" class="btn btn-danger" disabled>
+                Submit Lock
+              </button>
+            </div><!-- /panel-footer -->
+        </div><!-- /panel -->
+      </form><!-- /lockout-form -->
+
+    </div><!-- /col-md-6 -->
+  {% endif %}
+</div>
+
+<!-- Invest panel -->
+
+
+
+
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  $("abbr.timeago").timeago();
+</script>
+<script>
+  $('#toggle-lock-panel').on('click', function() {
+    $('#lock-panel').show();
+    $(this).parent().hide();
+  });
+</script>
+
+<script>
+  var $lockoutForm = $('#lockout-form');
+  var $passwordInput = $lockoutForm.find('input[name="password"]');
+  var $submitBtn = $lockoutForm.find('button[type="submit"]');
+  var $daysInput = $lockoutForm.find('input[name="days"]');
+  var $finalWarning = $lockoutForm.find('#lockout-final-warning');
+
+  function updateSubmitBtn() {
+    var daysInt = parseInt($daysInput.val(), 10);
+
+    $finalWarning.show();
+
+    if (daysInt > 0 && $passwordInput.val().length > 0) {
+      console.log('enabling');
+      $submitBtn.prop('disabled', false);
+    } else {
+      console.log('disabling');
+      $submitBtn.prop('disabled', true);
+    }
+  }
+
+  $('#days-input').on('change', function(e) {
+    var daysStr = e.target.value;
+    $('#days-feedback').text(daysStr);
+    updateSubmitBtn();
+  });
+  $passwordInput.on('keypress keyup', function() {
+    updateSubmitBtn();
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends 'master.html' %}
+{% import 'macros/macros.html' as macros %}
+
+{% block embed %}
+<div class="page-header">
+  <h1>Login to MoneyPot</h1>
+</div>
+
+{% if app %}
+  {{ macros.renderOnboardingPanel(app) }}
+{% endif %}
+
+
+
+<div class="row">
+  <div class="col-sm-6 col-sm-offset-3">
+
+    <p>
+      Don't have an account?
+      {% if app %}
+        <a href="/register?app_id={{ app.id }}">Register a new one</a>
+      {% else %}
+        <a href="/register">Register a new one</a>
+      {% endif %}
+    </p>
+
+    <form action="/login" method="post" class="form-horizontal">
+      <div class="panel panel-default">
+        <!-- PANEL BODY -->
+        <div class="panel-body">
+
+          <div class="form-group">
+            <label for="uname-input"
+                   class="col-sm-3 control-label">
+              Username:
+            </label>
+            <div class="col-sm-9">
+              <input id="uname-input"
+                     type="text"
+                     name="uname"
+                     class="form-control"
+                     {% if ctx.flash.params %}
+                       value="{{ ctx.flash.params.uname }}"
+                     {% endif %}
+                     >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password1-input"
+                   class="col-sm-3 control-label">
+              Password:
+            </label>
+            <div class="col-sm-9">
+              <input id="password1-input"
+                     type="password"
+                     name="password"
+                     class="form-control">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">
+              Human Test:
+            </label>
+            <div class="col-sm-9">
+              <div class="g-recaptcha" data-sitekey="{{ recaptchaSitekey }}" data-callback="recaptchaSuccessCallback"></div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+              <div class="checkbox">
+                <label>
+                  <input id="remember-me-input"
+                         name="remember-me"
+                         type="checkbox">
+                  Remember me
+                </label>
+              </div>
+            </div>
+          </div>
+
+
+        </div> <!-- /.panel-body -->
+        <!--
+            PANEL FOOTER
+            -->
+        <div class="panel-footer">
+          <div class="text-right">
+            <a href="/forgot" class="pull-left" style="margin-top: 7px;">
+              Forgot Password?<br>
+            </a>
+            <input id="login-submit"
+                   type="submit"
+                   value="Submit"
+                   class="btn btn-danger disabled but-clickable"
+                   >
+          </div>
+        </div> <!-- /.panel-footer -->
+      </div> <!-- /.panel -->
+    </form>
+  </div> <!-- /col -->
+</div> <!-- /.row -->
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+  $('#uname-input').focus();
+  function recaptchaSuccessCallback() {
+    $('#login-submit')
+      .removeClass('btn-danger')
+      .removeClass('disabled')
+      .addClass('btn-primary')
+  }
+</script>
+<script src='https://www.google.com/recaptcha/api.js'></script>
+{% endblock %}

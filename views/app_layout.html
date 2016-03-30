@@ -1,0 +1,125 @@
+{% extends 'profile_layout.html' %}
+
+{% block profileTabContent %}
+
+<!-- Crumbs -->
+
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li><a href="/apps">Apps</a></li>
+  <li class="active">{{ app.name }}</li>
+</ol>
+
+<!-- Page header -->
+
+<div class="page-header">
+  <!-- Disable/Enable controls -->
+  {% if ctx.currUser %}
+    {% if auth %}
+      {% if auth.enabled %}
+        <form action="/me/auths/{{ auth.id }}/disable" method="post">
+          <button type="submit" class="btn btn-danger pull-right">
+            Disable App
+          </button>
+        </form>
+      {% else %}
+        <form action="/me/auths/{{ auth.id }}/enable" method="post">
+          <button type="submit" class="btn btn-success pull-right">
+            Enable App
+          </button>
+        </form>
+      {% endif %}
+    {% else %}
+      <form action="/me/auths" method="post">
+        <input type="hidden" name="app_id" value="{{ app.id }}">
+        <button type="submit" class="btn btn-success pull-right">
+          Add & Enable App
+        </button>
+      </form>
+    {% endif %}
+  {% endif %}
+
+  <div class="media">
+    {% if app.thumbnail_hash %}
+      <div class="media-left media-middle">
+        <img src="/apps/thumbnails/{{ app.thumbnail_hash }}" height="100" width="200"
+             style="border: 2px solid #ccc; padding: 5px;">
+      </div>
+    {% endif %}
+    <div class="media-body">
+      <h1 class="media-heading">
+        <a href="{{ app.url }}" style="color: #333;">
+          {{ app.name -}}
+        </a>
+        <small>
+
+          {% if ctx.currUserStaffRecord %}
+            <span class="label label-info">
+              {{ ctx.currUserStaffRecord.role|capitalize }}
+            </span>
+            &nbsp;
+          {% endif %}
+
+          {% if app.verified_domain %}
+            {# Don't hyperlink so users are encouraged to use "go to app" button #}
+            {{ app.verified_domain }}
+          {% else %}
+            <span class="label label-danger">Domain Not Verified</span>
+            <span data-toggle="tooltip"
+                  class="glyphicon glyphicon-question-sign"
+                  title="We have not verified this app's authenticity">
+            </span>
+	          &nbsp;
+          {% endif %}
+
+	        {% if app.disabled_at %}
+            <span class="label label-warning">
+              App has been disabled
+            </span>
+	        {% endif %}
+        </small>
+      </h1>
+
+	    <div>
+		    <p class="text-muted">{{ app.description}}</p>
+	    </div>
+
+      <!-- Owner tools -->
+
+      {% if ctx.currUserStaffRecord && ctx.currUserStaffRecord.role === 'OWNER' %}
+        {% set options = ['owner', 'edit', 'history', 'fundings', 'staff'] %}
+        <div>
+          <span style="margin-top: 5px;">Owner Tools:</span>
+          <div class="btn-group" role="group" aria-label="...">
+            <a href="/apps/{{ app.id }}"
+               class="btn btn-default {% if ctx.path|pathTail|isNotIn(options) %}active{% endif %}">
+              Public
+            </a>
+            {% for option in options %}
+            <a href="/apps/{{ app.id }}/{{ option }}"
+               class="btn btn-default {% if ctx.path|pathTail === option %}active{% endif %}">
+              {{ option|capitalize }}
+            </a>
+            {% endfor %}
+          </div>
+
+          App Balance: {{ app.balance|formatSatoshis }} bits
+
+        </div>
+      {% endif %}
+
+    </div><!-- /media-body -->
+  </div><!-- /media -->
+
+</div>
+
+  {% block appContents %}{% endblock %}
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+  $("abbr.timeago").timeago();
+  $('[data-toggle="tooltip"]').tooltip();
+</script>
+{% endblock %}

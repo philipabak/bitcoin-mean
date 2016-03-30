@@ -1,0 +1,74 @@
+{% extends 'master.html' %}
+
+{% block embed %}
+  <ul class="nav nav-tabs" style="margin-bottom: 20px;">
+    {% if ctx.currUser %}
+      <li {% if ctx.path.startsWith('/me/account') %} class="active" {% endif %}>
+      <a href="/me/account">
+        <span class="glyphicon glyphicon-user"></span>
+        Account
+      </a>
+      </li>
+      <li {% if ctx.path.startsWith('/me/history') %} class="active" {% endif %}>
+        <a href="/me/history/all">
+          <span class="glyphicon glyphicon-list-alt"></span>
+          History
+        </a>
+      </li>
+      <li {% if ctx.path.startsWith('/me/send') %} class="active" {% endif %}>
+        <a href="/me/send"><span class="glyphicon glyphicon-send"></span>
+          Send
+        </a>
+      </li>
+      <li {% if ctx.path === '/me/receive' %} class="active" {% endif %}>
+        <a href="/me/receive"><span class="glyphicon glyphicon-inbox"></span>
+          Receive
+        </a>
+      </li>
+      <li {% if ctx.path === '/me/security' %} class="active" {% endif %}>
+        <a href="/me/security"><span class="glyphicon glyphicon-lock"></span>
+          Security
+        </a>
+      </li>
+      <li {% if ctx.path === '/me/settings' %} class="active" {% endif %}>
+        <a href="/me/settings"><span class="glyphicon glyphicon-cog"></span>
+          Settings
+          {% if !ctx.currUser.email %}
+          <span class="badge" style="background-color: #DD9C47;">1</span>
+          {% endif %}
+        </a>
+      </li>
+    {% endif %}
+
+    <!-- Apps -->
+    <li {% if ctx.path.startsWith('/apps') %} class="active" {% endif %}>
+      <a href="/apps"><span class="glyphicon glyphicon-apple"></span>
+        Apps
+      </a>
+    </li>
+
+    <!-- Investment -->
+    <li {% if ctx.path === '/investment' %} class="active" {% endif %}>
+      <a href="/investment">
+        <span class="glyphicon glyphicon-piggy-bank"></span>
+         Investment
+      </a>
+    </li>
+
+    {% if ctx.currUser %}
+      {% if ctx.currUser.role === 'admin' %}
+      <li class="pull-right {% if ctx.path.indexOf('/admin') === 0 %}active{% endif %}">
+        <a href="/admin">
+          <span class="glyphicon glyphicon-king"></span>
+          Admin
+        </a>
+      </li>
+      {% endif %}
+    {% endif %}
+
+  </ul>
+  {% block profileTabContent %}{% endblock %}
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

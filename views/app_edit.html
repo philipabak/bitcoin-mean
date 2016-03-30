@@ -1,0 +1,88 @@
+{% extends 'app_layout.html' %}
+
+{% block appContents %}
+<div class="panel panel-default">
+	<form action="/apps/{{ app.id }}" method="post">
+		<div class="panel-body">
+			<input type="hidden" name="_method" value="put">
+
+			<!-- Name -->
+			<div class="form-group">
+				<label for="name-input">Name:</label>
+				<input type="text" name="name" id="name-input" class="form-control"
+				       value="{{ app.name }}">
+			</div>
+
+			<!-- Redirect URIs -->
+			<div class="form-group">
+				<label for="redirect-uris-input">Redirect URIs:</label>
+        <textarea class="form-control" id="redirect-uris-input" name="redirect-uris" placeholder="example.com/oauth_callback" rows="3">{% for r in app.redirect_uris %}{{- r }}
+{% endfor %}</textarea>
+				<p class="help-block">One URL per line</p>
+			</div>
+
+			<div class="form-group">
+				<label for="recaptcha-secret-input">Recaptcha Secret:</label>
+				<input type="text" name="recaptcha-secret" id="recaptcha-secret-input" class="form-control"
+				       value="{{ app.recaptcha_secret }}" placeholder="Optional google recaptcha secret, for MoneyPot.com powered faucet">
+			</div>
+
+			<hr>
+
+			<div class="form-group">
+				<label for="oauth-response-type-input">OAuth Response Type:</label>
+				<select name="oauth-response-type" id="oauth-response-type-input" class="form-control">
+					<option value="token" {% if  app.oauth_response_type === 'token'  %}selected{% endif %}>token</option>
+					<option value="confidential" {% if  app.oauth_response_type === 'confidential'  %}selected{% endif %}>confidential</option>
+				</select>
+			</div>
+
+
+			<hr>
+
+			<!-- Description -->
+			<div class="form-group">
+				<label for="description-input">Short Description:</label>
+				<textarea class="form-control" id="description-input" name="description" placeholder="Yet another dice site" rows="3" maxlength="140">{{ app.description }}</textarea>
+			</div>
+
+		</div><!-- /panel-body -->
+
+		<div class="panel-footer">
+			<input type="submit" value="Update App" class="btn btn-primary">
+			<a href="/apps/{{ app.id }}" class="btn btn-default">Cancel</a>
+		</div>
+	</form>
+</div>
+
+
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">Update Thumbnail</h3>
+	</div>
+	<form action="/apps/{{ app.id }}/thumbnail" method="post" enctype="multipart/form-data">
+		<div class="panel-body">
+
+			<!-- Name -->
+			<div class="form-group">
+				<label for="name-input">Thumbnail:</label>
+				<input type="file"  accept="image/*" name="thumbnail" id="thumbnail" class="form-control"
+				        required >
+				<p class="help-block">Thumbnail must be an image of 200 pixels wide, by 108 pixels high</p>
+			</div>
+
+		</div><!-- /panel-body -->
+
+		<div class="panel-footer">
+			<input type="submit" value="Update Thumbnail" class="btn btn-primary">
+		</div>
+	</form>
+
+
+</div>
+
+
+
+
+
+{% endblock %}

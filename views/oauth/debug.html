@@ -1,0 +1,59 @@
+{% extends '../master.html' %}
+
+{% block embed %}
+
+<h3>Copy and paste this token into the application:</h3>
+<input id="access-token-input" type="text" placeholder="No token found"
+       class="form-control" value="{{ confidential_token }}" disabled>
+<p class="text-muted">This will allow the app to use this authorization</p>
+<hr />
+<span id="accessTokenHider" style="visibility: hidden">
+	<button type="submit" onclick="debugToken()">Get Token Debug Info</button>
+	<pre><code id="tokenInfo"></code></pre>
+</span>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+	function getHashByName(name) {
+
+		var hashParams = {};
+		var e,
+			a = /\+/g,  // Regex for replacing addition symbol with a space
+			r = /([^&;=]+)=?([^&;]*)/g,
+			d = function (s) {
+				return decodeURIComponent(s.replace(a, " "));
+			},
+			q = window.location.hash.substring(1);
+
+		while (e = r.exec(q))
+			hashParams[d(e[1])] = d(e[2]);
+
+		return hashParams[name];
+	}
+
+	var accessToken = getHashByName('access_token');
+
+	if (accessToken) {
+		$('#accessTokenHider').attr('style', '');
+		$('#access-token-input').val(accessToken);
+	}
+
+
+	function debugToken() {
+		if (!accessToken) return alert('No access token');
+		console.log('Debugging access token: ', accessToken);
+
+		$.getJSON('/v1/token?access_token=' + encodeURIComponent(accessToken), function(data) {
+
+			console.log(data);
+			$('#tokenInfo').text(JSON.stringify(data, null, 2));
+		});
+
+	}
+
+
+
+</script>
+{% endblock %}

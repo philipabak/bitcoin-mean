@@ -1,0 +1,253 @@
+{% extends 'app_layout.html' %}
+
+{% block appContents %}
+
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">Current Staff</h3>
+	</div>
+	<div class="panel-body">
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Role</th>
+          <th>Appointed By</th>
+          <th>Appointed At</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in activeStaff %}
+          <tr>
+            <!-- Username -->
+            <td>
+              <a href="{{ user.url }}">
+                {{ user.uname }}
+              </a>
+            </td>
+            <!-- Role -->
+            <td>
+              {{ user.role }}
+            </td>
+            <!-- Appointed By -->
+            <td>
+              {% if user.appointed_by_user %}
+                <a href="/users/{{ user.appointed_by_user.uname }}">
+                  {{ user.appointed_by_user.uname }}
+                </a>
+              {% else %}
+                N/A, created the app
+              {% endif %}
+            </td>
+            <!-- When -->
+            <td>
+              <abbr class="timeago" title="{{ user.created_at.toISOString() }}">
+                {{ user.created_at|formatDate }}
+              </abbr>
+            </td>
+            <!-- Actions -->
+            <td>
+              {% if currUserCanDemoteStaffUser(ctx.currApp.app_staff, ctx.currUser.id, user.user_id) %}
+                <form method="POST" action="/apps/{{ ctx.currApp.id }}/staff">
+                  <input type="hidden" name="_method" value="delete">
+                  <input type="hidden" name="user_id" value="{{ user.user_id }}">
+                  <button type="submit" class="btn btn-danger btn-xs demote-btn" data-uname="{{ user.uname }}">
+                    Demote
+                  </button>
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+	</div>
+</div>
+
+<p>
+  Note: Any owner can demote any mod, but owners can only demote owners that were appointed after them. In other words, owners have seniority over other owners.
+</p>
+
+<!-- Appointment panel -->
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Appoint a new staff member</h3>
+    </div>
+  <form method="POST" action="/apps/{{ app.id }}/staff" class="form-horizontal">
+    <div class="panel-body">
+
+        <div class="form-group">
+          <label for="uname-input" class="col-sm-2 control-label">
+            Username:
+          </label>
+          <div class="col-sm-10">
+            <input id="uname-input" type="text" name="uname" class="form-control uname-typeahead">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Role:</label>
+          <div class="col-sm-10">
+            <div class="btn-group role-btn-group" data-toggle="buttons">
+              <label class="btn btn-default active mod-role-btn">
+                <input value="MOD" type="radio" name="role" autocomplete="off" checked> Mod
+              </label>
+              <label class="btn btn-default owner-role-btn">
+                <input value="OWNER" type="radio" name="role" autocomplete="off"> Owner
+              </label>
+            </div>
+            <div class="help-block">
+              <ul>
+                <li>
+                  <u>Mods</u> have basic chat abilities
+                </li>
+                <li>
+                  <u>Owners</u> have control over the app, like withdrawing app profit and appointing more owners/mods
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+    </div><!-- /panel-body -->
+    <div class="panel-footer text-right">
+      <button type="submit" class="btn btn-success" id="submit-appointment">
+        Appoint
+      </button>
+    </div>
+  </form>
+</div>
+
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">Ex-Staff</h3>
+	</div>
+	<div class="panel-body">
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Role</th>
+          <th>Appointed By</th>
+          <th>Appointed At</th>
+          <th>Demoted By</th>
+          <th>Demoted At</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in demotedStaff %}
+          <tr>
+            <!-- Username -->
+            <td>
+              <a href="{{ user.url }}">
+                {{ user.uname }}
+              </a>
+            </td>
+            <!-- Role -->
+            <td>
+              {{ user.role }}
+            </td>
+            <!-- Appointed By -->
+            <td>
+              {% if user.appointed_by_user %}
+                <a href="/users/{{ user.appointed_by_user.uname }}">
+                  {{ user.appointed_by_user.uname }}
+                </a>
+              {% else %}
+                N/A, created the app
+              {% endif %}
+            </td>
+            <!-- Appointed At -->
+            <td>
+              <abbr class="timeago" title="{{ user.created_at.toISOString() }}">
+                {{ user.created_at|formatDate }}
+              </abbr>
+            </td>
+            <!-- Demoted By -->
+            <td>
+              <a href="/users/{{ user.demoted_by_user.uname }}">
+                {{ user.demoted_by_user.uname }}
+              </a>
+            </td>
+            <!-- Demoted At -->
+            <td>
+              <abbr class="timeago" title="{{ user.demoted_at.toISOString() }}">
+                {{ user.demoted_at|formatDate }}
+              </abbr>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+	</div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+  {% parent %}
+
+
+  {#
+    Initialize Username Typeahead
+  #}
+  <script src="/js/usernamesTypeahead.js"></script>
+  <script>
+    var userSearcher = new UserTypeaheadSearcher();
+    userSearcher.mount('.uname-typeahead');
+  </script>
+
+  {#
+      When user clicks "Demote", pop up an "are you sure?" confirmation dialog
+  #}
+  <script type="text/javascript">
+    $('.demote-btn').on('click', function(e) {
+      var uname = $(this).attr('data-uname');
+      var result = confirm('Are you sure you want to demote user "' + uname + '"?');
+      if (!result) {
+        e.preventDefault();
+      }
+    });
+  </script>
+
+  {#
+      When user clicks "Appoint", pop up "are you sure?" confirmation
+  #}
+  <script type="text/javascript">
+    $('#submit-appointment').on('click', function(e) {
+      var uname = $('#uname-input').val();
+      var result = confirm('Are you sure you want to appoint user "' + uname + '"?');
+      if (!result) {
+        e.preventDefault();
+      }
+    });
+  </script>
+
+  {#
+      As user fills in appointment form, update the Appoint button
+  #}
+  <script type="text/javascript">
+    var $submit = $('#submit-appointment');
+
+    var updateButton = function() {
+      var uname = $('#uname-input').val().trim();
+      if (uname.length > 0) {
+        $submit.text('Appoint ' + uname);
+        $submit.attr('disabled', false);
+      } else {
+        $submit.text('Appoint');
+        $submit.attr('disabled', true);
+      }
+    };
+
+    $('#uname-input').on('change keyup', updateButton);
+    updateButton();  // run on page load
+  </script>
+{% endblock %}

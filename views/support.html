@@ -1,0 +1,75 @@
+{% extends 'master.html' %}
+
+{% block embed %}
+<div class="container" style="background-color: transparent">
+
+    <div class="row">
+        <div class="col-lg-8 col-md-10 col-sm-12">
+          <div class="page-header">
+            <h2>How can we help you?</h2>
+          </div>
+            <p class="lead">We are happy to answer any of questions or assist with any account related matters.</p>
+	        <hr>
+
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <form action="/support" method="post">
+                    <div class="form-group">
+                        <label for="support-email">Your email address</label>
+                        <input name="email"
+                               type="email"
+                               class="form-control"
+                               id="support-email"
+                               placeholder="email@example.com"
+                               value="{{ ctx.flash.params && ctx.flash.params.email }}"
+                               required>
+                        <div class="help-block">This will let us respond to you</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="support-input">Message</label>
+                        <textarea name="message"
+                                  class="form-control"
+                                  id="support-input"
+                                  rows="3"
+                                  placeholder=""></textarea>
+                        <div class="text-block text-counter-container">
+                          <span class="text-counter">0</span>
+                          / 3000 chars
+                        </div>
+                    </div>
+                   <div class="form-group">
+                    <label>Human Test</label>
+                    <div class="g-recaptcha" data-sitekey="{{ recaptchaSitekey }}" data-callback="recaptchaSuccessCallback"></div>
+                  </div>
+                    <button id="support-submit"
+                            type="submit"
+                            class="btn btn-danger"
+                            {% if prod %}disabled{% endif %}>
+                  Submit</button>
+                </form>
+              </div><!-- /panel-body -->
+            </div><!-- /panel -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  <script type="text/javascript">
+    $('#support-input').on('keyup change blur', function() {
+      var count = $(this).val().length;
+      $('.text-counter').text(count);
+      if (count > 3000)
+        $('.text-counter-container').css('color', 'red');
+      else
+        $('.text-counter-container').css('color', 'black');
+    })
+	function recaptchaSuccessCallback() {
+		$('#support-submit')
+			.removeClass('btn-danger')
+			.addClass('btn-primary')
+			.attr('disabled', false);
+	}
+</script>
+<script src='https://www.google.com/recaptcha/api.js'></script>
+{% endblock %}

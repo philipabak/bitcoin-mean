@@ -1,0 +1,29 @@
+{% extends 'profile_layout.html' %}
+
+{% block profileTabContent %}
+<div class="row">
+
+  <!-- Sidebar -->
+  <div class="col-xs-3">
+    <div class="list-group">
+
+        <a href="/me/application/lucky" class="list-group-item">
+          <span class="badge">0 bits</span>
+          Lucky Slots
+        </a>
+
+
+      <a href="/me/applications/new" class="list-group-item
+       {% if ctx.path === '/me/appliactions/new' %} active {% endif %}
+      ">
+        <span class="glyphicon glyphicon-plus"></span> New Application
+      </a>
+    </div>
+
+  </div>
+  <!-- Content -->
+  <div class="col-xs-9">
+    {% block currWalletContent %}{% endblock %}
+  </div>
+</div>
+{% endblock %}

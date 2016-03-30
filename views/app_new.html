@@ -1,0 +1,53 @@
+{% extends 'profile_layout.html' %}
+
+{% block profileTabContent %}
+<div class="page-header">
+  <h1>New App</h1>
+</div>
+
+<div class="panel panel-default">
+  <form action="/apps" method="post">
+    <div class="panel-body">
+      <!-- Name -->
+      <div class="form-group">
+        <label for="name-input">Name:</label>
+        <input type="text" name="name" id="name-input" class="form-control"
+               value={% if ctx.flash.params %}{{ ctx.flash.params.name }}{% endif %}
+        >
+      </div>
+
+      <!-- Redirect URIs -->
+      <div class="form-group">
+        <label for="redirect-uris-input">Redirect URIs:</label>
+        <textarea class="form-control"
+                  id="redirect-uris-input"
+                  name="redirect-uris"
+                  placeholder="https://example.com/oauth_callback" rows="3"></textarea>
+        <p class="help-block">One URL per line</p>
+      </div>
+
+      <div class="form-group">
+        <label for="recaptcha-secret-input">Recaptcha Secret:</label>
+        <input type="text" name="recaptcha-secret" id="recaptcha-secret-input" class="form-control"
+               value="{{ app.recaptcha_secret }}" placeholder="Optional google recaptcha secret, for MoneyPot.com powered faucet">
+      </div>
+
+	    <!-- Description -->
+	    <div class="form-group">
+		    <label for="description-input">Short Description:</label>
+		    <textarea class="form-control" id="description-input" name="description" placeholder="Yet another dice site" rows="3" maxlength="140">{{ app.description }}</textarea>
+	    </div>
+
+    </div><!-- /panel-body -->
+    <div class="panel-footer">
+      <input type="submit" value="Create App" class="btn btn-primary">
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  <script type="text/javascript">
+    $('#name-input').focus();
+  </script>
+{% endblock %}

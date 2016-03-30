@@ -1,0 +1,29 @@
+{% extends 'master.html' %}
+
+{% block embed %}
+<div class="page-header">
+  <h1>FAQ</h1>
+</div>
+
+<style>
+  h2:hover { cursor: pointer; }
+  .faq-link { color: black; text-decoration: none; }
+  .faq-link:hover { color: black; text-decoration: none; }
+</style>
+
+{{ html|raw }}
+
+{% endblock %}
+
+{% block scripts %}
+  <script type="text/javascript">
+    $('h2').mouseenter(function() {
+      $(this).append('<small> LINK</small>');
+    }).mouseleave(function() {
+    $(this).find('small').remove();
+    }).wrap(function() {
+      var id = $(this).attr('id');
+      return '<a href="#'+id+'" class="faq-link"></a>';
+    });
+  </script>
+{% endblock %}

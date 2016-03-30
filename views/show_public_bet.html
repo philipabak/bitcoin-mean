@@ -1,0 +1,100 @@
+{% extends 'master.html' %}
+
+{% block embed %}
+
+<!-- Crumbs -->
+
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li>Bets</li>
+  <li class="active">Bet #{{ bet.id }}</li>
+</ol>
+
+<!-- Page header -->
+
+<div class="page-header">
+  <h1>Bet #{{ bet.id }}</h1>
+</div>
+
+{% if bet.kind === 'simple_dice' %}
+<h3>Simple Dice Bet</h3>
+<ul>
+	<li>Outcome: {{ bet.outcome }}</li>
+	<li>Cond: {{ bet.cond }}</li>
+	<li>Target: {{ bet.target }}</li>
+</ul>
+<hr>
+{% elif bet.kind === '101_dice' %}
+<h3>101 Dice</h3>
+<ul>
+	<li>Outcome: {{ bet.outcome }}</li>
+	<li>Cond: {{ bet.cond }}</li>
+	<li>Target: {{ bet.target }}</li>
+</ul>
+
+
+<hr>
+{% endif %}
+
+<h3>General Info</h3>
+<ul>
+  <li>User: <a href="{{ bet.user.url }}">{{ bet.user.uname }}</a></li>
+  <li>App: <a href="{{ bet.app.url }}">{{ bet.app.name }}</a></li>
+  <li>Bet Kind: {{ bet.kind }}</li>
+  <li>Wager: {{ bet.wager|formatSatoshis }} bits</li>
+  <li>
+    Profit:
+    {% if bet.profit > 0 %}
+      <span class="text-success">+{{ bet.profit|formatSatoshis }} bits</span>
+    {% else %}
+      <span class="text-danger">{{ bet.profit|formatSatoshis }} bits</span>
+    {% endif %}
+  </li>
+</ul>
+<h3>Provably Fair</h3>
+<ul>
+	<li>Salt: {{ bet.salt }}</li>
+	<li>Secret: {{ bet.secret|formatNumber }}</li>
+	<li>Client Seed: {{ bet.client_seed|formatNumber }}</li>
+	<li>Raw Outcome: {{ bet.raw_outcome|formatNumber }} <code>(client_seed + secret) % 2<sup>32</sup></code></li>
+</ul>
+
+<h3>Advanced</h3>
+<ul>
+	<li>Investor Profit: {{ bet.bankroll_profit/100 }} bits</li>
+	<li>App Dev Profit: {{ bet.app_profit/100 }} bits</li>
+	<li>House Edge:  {{ (-bet.ev / bet.wager * 100).toFixed(2)  }}%</li>
+	<li>Payouts:
+		<table class="table">
+			<tr>
+				<th>From</th>
+				<th>To</th>
+				<th>Payout</th>
+				<th>Probability</th>
+				<th>Expected Value</th>
+			</tr>
+			{% for payout in bet.payouts %}
+			<tr {% if bet.raw_outcome >= payout.from && bet.raw_outcome < payout.to %} style="font-weight: bold" class="active" {% endif %} >
+				<td>{{ payout.from|formatNumber }}</th>
+				<td>{{ payout.to|formatNumber }}</td>
+				<td>{{ payout.value|formatSatoshis }} bits</td>
+				<td>{{ (payout.to - payout.from) / Math.pow(2,32) * 100 }}%</td>
+				{% set range = payout.to - payout.from %}
+				{% set chance = range / Math.pow(2,32) %}
+				<td>{{ (chance * payout.value) | formatSatoshis}} bits</td>
+			</tr>
+			{% endfor %}
+		</table>
+	<li>Total Expected Value: {{ bet.ev | formatSatoshis }} bits</li>
+</ul>
+
+
+{% if ctx.currUser.role === 'admin' %}
+  <h4>Debug information: (Admins only)</h4>
+  <pre>{{ JSON.stringify(bet, null, 2) }}</pre>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

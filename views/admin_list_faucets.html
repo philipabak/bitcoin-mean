@@ -1,0 +1,44 @@
+{% extends 'profile_layout.html' %}
+
+{% block profileTabContent %}
+<div class="page-header">
+  <h1>Faucets</h1>
+</div>
+
+<dl class="dl-horizontal">
+	<dt>Claimed last day:</dt>
+	<dd>{{ stats.last_day | formatSatoshis}} bits</dd>
+	<dt>Claimed last week:</dt>
+	<dd>{{ stats.last_week | formatSatoshis}} bits</dd>
+	<dt>Claimed last month:</dt>
+	<dd>{{ stats.last_month | formatSatoshis}} bits</dd>
+</dl>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>id</th>
+      <th>uname</th>
+      <th>ip</th>
+      <th>app</th>
+	    <th>time</th>
+    </tr>
+  </thead>
+  {% for faucet in faucets %}
+    <tr>
+      <td>{{ faucet.id }}</td>
+      <td>{{ faucet.uname }}</td>
+	    <td>{{ faucet.ip_address }}</td>
+      <td>{{ faucet.app_name }}</td>
+	    <td>{{ faucet.created_at|formatDate  }}</td>
+    </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+  $("abbr.timeago").timeago();
+</script>
+{% endblock %}

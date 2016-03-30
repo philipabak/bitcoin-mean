@@ -1,0 +1,149 @@
+{% extends 'app_layout.html' %}
+
+{% block appContents %}
+
+
+{% if app.disabled_at %}
+<div class="alert alert-warning" role="alert">Your app has been disabled. API access will not work. Please contact support.</div>
+{% endif %}
+
+
+<!-- Go-to-app button -->
+
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title">App Owner Info</h3>
+	</div>
+	<div class="panel-body">
+
+    <h3>
+      App ID:
+      <code style="display: inline-block; min-width: 50px;" class="text-center">{{ app.id }}</code>
+    </h3>
+
+		<h3>Redirect URIs</h3>
+		{% if app.redirect_uris.length > 0 %}
+		<ul>
+			{% for uri in app.redirect_uris %}
+			<li>{{ uri }}</li>
+			{% endfor %}
+		</ul>
+		{% else %}
+		This app has no redirect URIs configured, yet.
+		{% endif %}
+
+
+		<h3>App Secret</h3>
+
+		<script>
+			var show = false;
+			function toggleSecret() {
+				show = !show;
+
+				var s = document.getElementById('secret');
+				s.type = show ? 'text' : 'password';
+				s.value = '{{ app.secret }}';
+				s.disabled = !show;
+
+				var e = document.getElementById('secret-eye');
+				e.className = 'glyphicon glyphicon-eye-' + (show ? 'close' : 'open');
+
+				document.getElementById('secret-toggle').innerText = show ? 'Hide'  : 'Show';
+
+			}
+
+			function invalidate() {
+				return confirm("Are you sure? Your old app secret will immediately stop working");
+			}
+
+		</script>
+
+
+		<form method="post" action="/apps/{{ app.id }}/secret" onsubmit="return invalidate()">
+			<div class="row">
+				<div class="col-xs-12">
+					<div class="input-group">
+        <span class="input-group-addon">
+            <button type="button" onclick="toggleSecret()">
+	            <span class="glyphicon glyphicon-eye-open" aria-hidden="true" id="secret-eye"></span>
+	            <span id="secret-toggle">Show</span>
+
+            </button>
+        </span>
+						<input type="password" class="form-control" value="{{ app.secret }}" id="secret" disabled>
+        <span class="input-group-addon">
+          <button><span class="glyphicon glyphicon-leaf" aria-hidden="true"></span> Regenerate!</button>
+      </span>
+					</div>
+				</div>
+			</div>
+		</form>
+
+		<script>
+			var rshow = false;
+			function toggleRecaptcha() {
+				rshow = !rshow;
+
+				var s = document.getElementById('recaptcha_secret');
+				s.type = rshow ? 'text' : 'password';
+				s.value = '{{ app.recaptcha_secret }}';
+				s.disabled = !rshow;
+
+				var e = document.getElementById('recaptcha-eye');
+				e.className = 'glyphicon glyphicon-eye-' + (rshow ? 'close' : 'open');
+
+				document.getElementById('recaptcha-toggle').innerText = rshow ? 'Hide'  : 'Show';
+
+			}
+
+		</script>
+
+
+		<h3>Recaptcha Secret</h3>
+		{% if app.recaptcha_secret %}
+
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="input-group">
+      <span class="input-group-addon">
+          <button type="button" onclick="toggleRecaptcha()">
+	          <span class="glyphicon glyphicon-eye-open" aria-hidden="true" id="recaptcha-eye"></span>
+	          <span id="recaptcha-toggle">Show</span>
+          </button>
+      </span>
+					<input type="password" class="form-control" value="{{ app.recaptcha_secret }}" id="recaptcha_secret" disabled>
+				</div>
+			</div>
+		</div>
+
+		{% else %}
+		This app has no recaptcha, it is optional but required to use the faucet api.
+		{% endif %}
+
+		<h3>OAuth Response Type</h3>
+		<code>{{ app.oauth_response_type }}</code>
+
+	</div>
+</div>
+
+{% if !app.disabled_at %}
+
+<div class="panel panel-default">
+	<form action="/apps/{{ app.id }}/disable" method="post" onsubmit="return confirm('Are you sure you wish to disable your app?');">
+		<div class="panel-body">
+			<h2>Emergency Disable</h2>
+			<p class="help-block">This will deactivate all API calls, and deauthorize any existing authorizations.  If your
+				app_secret has been compromised, please hit this as merely regenerating an app_secret does not invalidate any generated
+				tokens. This also can be hit if your account has been compromised.
+			</p>
+		</div><!-- /panel-body -->
+
+		<div class="panel-footer">
+			<input type="submit" value="Disable App" class="btn btn-danger">
+		</div>
+	</form>
+</div>
+
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'app_layout.html' %}
+
+{% block appContents %}
+<h1>Bet History</h1>
+
+<hr>
+<table class="table">
+  <thead>
+  <tr>
+    <th>Bet Id</th>
+    <th>Kind</th>
+    <th>Player</th>
+    <th>Wager</th>
+    <th>Profit</th>
+    <th>App Profit</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for bet in bets %}
+    <tr>
+      <td>{{ bet.id }}</td>
+      <td>{{ bet.kind }}</td>
+      <td>{{ bet.user.uname }}</td>
+      <td>{{ bet.wager | formatSatoshis}} bits</td>
+      <td>{{ bet.profit | formatSatoshis}} bits</td>
+      <td>{{ bet.app_profit | formatSatoshis}} bits</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+
+</table>
+
+{% endblock %}

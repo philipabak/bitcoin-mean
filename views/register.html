@@ -1,0 +1,115 @@
+{% extends 'master.html' %}
+{% import 'macros/macros.html' as macros %}
+
+{% block embed %}
+<div class="page-header">
+  <h1>Register with MoneyPot</h1>
+</div>
+
+{% if app %}
+  {{ macros.renderOnboardingPanel(app) }}
+{% endif %}
+
+<div class="row">
+  <div class="col-sm-6 col-sm-offset-3">
+
+    <p>
+      Already have an account?
+        <a href="/login{% if app %}?app_id={{ app.id }}{% endif %}">Login</a>
+    </p>
+
+    <form action="/users" method="post">
+      <div class="panel panel-default">
+        <div class="panel-body">
+      <div class="form-group">
+        <label for="uname-input">Username:</label>
+        <input id="uname-input"
+               type="text"
+               name="uname"
+               class="form-control"
+               {% if ctx.flash.params %}
+                value="{{ ctx.flash.params.uname }}"
+               {% endif %}
+               required
+               >
+      </div>
+      <div class="form-group">
+        <label for="email-input">Email:</label>
+        <input id="email-input"
+               type="email"
+               name="email"
+               class="form-control"
+               placeholder="Optional"
+               {% if ctx.flash.params %}
+                value="{{ ctx.flash.params.email }}"
+               {% endif %}
+               >
+      </div>
+      <div class="form-group">
+        <label for="password1-input">Password:</label>
+        <input id="password1-input" type="password" name="password1"
+               class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="password2-input">Confirm Password:</label>
+        <input id="password2-input" type="password" name="password2"
+               class="form-control" required>
+      </div>
+      <div class="form-group" style="min-height: 78px;">
+        <label>Human Test:</label>
+        <div class="g-recaptcha"
+             data-sitekey="{{ recaptchaSitekey }}"
+             data-callback="recaptchaSuccessCallback">
+        </div>
+      </div>
+        <div class="form-group">
+
+            <label>
+                <input type="checkbox" name="legal" required>
+                <span class="text-muted">
+                    You confirm that gambling and our services are legal in your jurisdiction.
+                </span>
+            </label>
+
+        </div>
+
+          </div> <!-- /.panel-body -->
+        <div class="panel-footer">
+          <div class="text-right">
+            <span id="recaptcha-reminder">You must satisfy the human test before you can submit</span>
+            <input id="register-submit"
+                   type="submit"
+                   value="Submit"
+                   class="btn btn-danger"
+                   {% if prod %}disabled{% endif %}>
+          </div>
+        </div> <!-- /.panel-footer -->
+        </div> <!-- /.panel -->
+
+    </form>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block headscripts %}
+
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+	// Called when user submits successful recaptcha, so allow them
+	// to actually submit the form.
+	function recaptchaSuccessCallback() {
+		$('#register-submit')
+			.removeClass('btn-danger')
+			.addClass('btn-primary')
+			.attr('disabled', false);
+		$('#recaptcha-reminder').text('');
+	}
+	$('#uname-input').focus();
+</script>
+<script src='https://www.google.com/recaptcha/api.js'></script>
+
+{% endblock %}

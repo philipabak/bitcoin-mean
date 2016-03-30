@@ -1,0 +1,532 @@
+{#{% extends 'master.html' %}#}
+{% extends 'profile_layout.html' %}
+
+{% macro renderStaffedApp(entry) %}
+
+  <li class="list-group-item">
+    <div class="media">
+      {% if entry.app.thumbnail_hash %}
+        <div class="media-left">
+          <a href="{{ entry.app.url }}">
+            <img class="media-object"
+                 src="/apps/thumbnails/{{ entry.app.thumbnail_hash }}"
+                 alt="{{ entry.app.name }} thumbnail"
+                 width="200"
+                 height="108"
+                 style="border: 2px solid #ccc; padding: 5px;"
+            >
+          </a>
+        </div>
+      {% else %}
+        <div class="media-left">
+          <a href="{{ entry.app.url }}">
+            <div class="media-object text-center" style="border: 2px solid #ccc; padding: 5px; width: 200px; height: 104px">
+              <div class="lead" style="margin-top: 25px; color: #333">
+                {{ entry.app.name }}
+              </div>
+            </div>
+          </a>
+        </div>
+      {% endif %}
+      <div class="media-body">
+        <p>
+          <a href="{{ entry.app.url }}">
+            {{ entry.app.name }}
+          </a>
+          <span class="label label-info">{{ entry.app.role|capitalize }}</span>
+          {% if !entry.auth %}
+            <span class="label label-danger">Disabled</span>
+          {% elif entry.auth && !entry.auth.enabled %}
+            <span class="label label-danger">Disabled</span>
+          {% else %}
+            <span class="label label-success">Enabled</span>
+          {% endif %}
+        </p>
+          <dl class="dl-horizontal">
+            <dt>Your Balance</dt>
+            {% if entry.auth %}
+              <dd>{{ entry.auth.balance|formatSatoshis }} bits</dd>
+            {% else %}
+              <dd>0 bits</dd>
+            {% endif %}
+
+            {% if entry.role === 'OWNER' %}
+              <dt>App Balance</dt>
+              <dd>
+                {{ entry.app.balance|formatSatoshis }} bits
+                <a href="{{ entry.app.url }}/fundings">Manage</a>
+              </dd>
+            {% endif %}
+          </dl>
+      </div>
+    </div>
+  </li>
+{% endmacro %}
+
+{% macro renderAppAuth(auth) %}
+  {% if !auth.is_staff %}
+    <li class="list-group-item">
+
+      <div class="media">
+        {% if auth.app.thumbnail_hash %}
+          <div class="media-left">
+            <a href="{{ auth.app.url }}">
+              <img class="media-object"
+                   src="/apps/thumbnails/{{ auth.app.thumbnail_hash }}"
+                   alt="{{ auth.app.name }} thumbnail"
+                   width="200"
+                   height="108"
+                   style="border: 2px solid #ccc; padding: 5px;"
+              >
+            </a>
+          </div>
+        {% else %}
+          <div class="media-left">
+            <a href="{{ auth.app.url }}">
+              <div class="media-object text-center" style="border: 2px solid #ccc; padding: 5px; width: 200px; height: 104px">
+                <div class="lead" style="margin-top: 25px; color: #333">
+                  {{ auth.app.name }}
+                </div>
+              </div>
+            </a>
+          </div>
+        {% endif %}
+        <div class="media-body">
+          <p>
+            <a href="{{ auth.app.url }}">{{ auth.app.name }}</a>
+            {% if auth.enabled %}
+              <span class="label label-success">Enabled</span>
+            {% else %}
+              <span class="label label-danger">Disabled</span>
+            {% endif %}
+          </p>
+          <dl class="dl-horizontal">
+            <dt>Your Balance</dt>
+            <dd>{{ auth.balance|formatSatoshis }} bits</dd>
+          </dl>
+        </div>
+      </div>
+    </li>
+  {% endif %}
+{% endmacro %}
+
+{% block profileTabContent %}
+
+<!-- Crumbs -->
+
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li class="active">Apps</li>
+</ol>
+
+<!-- Page header -->
+
+<div class="page-header">
+  <h1>Apps</h1>
+</div>
+
+{% if ctx.currUser %}
+
+  <p>
+    Unless they are <span class="label label-danger">disabled</span>, apps have access to the amount you have deposited in them.
+  </p>
+
+  <!-- Tabs -->
+
+  <ul class="nav nav-tabs" style="margin-bottom: 10px">
+    <li role="presentation" class="active">
+      <a href="#enabled" data-toggle="tab">
+        Enabled
+        <span class="badge">{{ enabledAppsCount }}</span>
+      </a>
+    </li>
+    <li role="presentation">
+      <a href="#disabled" data-toggle="tab">
+        Disabled
+        <span class="badge">{{ disabledAppsCount }}</span>
+      </a>
+    </li>
+    <li role="presentation">
+      <a href="#owned" data-toggle="tab">
+        Owned/Staffed
+        <span class="badge">{{ staffedApps.length }}</span>
+      </a>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+
+    <div class="tab-pane active" id="enabled">
+
+      <!-- Enabled -->
+      <ul class="list-group">
+        {% if enabledAppsCount === 0 %}
+          <li class="list-group-item">
+            <p class="lead">You have no enabled apps</p>
+          </li>
+        {% endif %}
+
+        {% for app in staffedApps %}
+          {% if app.auth && app.auth.enabled %}
+            {{ renderStaffedApp(app) }}
+          {% endif %}
+        {% endfor %}
+
+        {% for auth in auths %}
+          {% if auth.enabled %}
+            {{ renderAppAuth(auth) }}
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Disabled -->
+    <div class="tab-pane" id="disabled">
+      <ul class="list-group">
+
+        {% if disabledAppsCount === 0 %}
+          <li class="list-group-item">
+            <p class="lead">You have no disabled apps</p>
+          </li>
+        {% endif %}
+
+        {% for app in staffedApps %}
+          {% if !app.auth %}
+            {{ renderStaffedApp(app) }}
+          {% elif !app.auth.enabled %}
+            {{ renderStaffedApp(app) }}
+          {% endif %}
+        {% endfor %}
+
+        {% for auth in auths %}
+          {% if !auth.enabled %}
+            {{ renderAppAuth(auth) }}
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Owned/Staffed -->
+    <div class="tab-pane" id="owned">
+      <p class="text-right">
+        Are you a developer?
+        <a href="/apps/new" class="btn btn-default btn-success" style="text-shadow: none;">
+          <span class="glyphicon glyphicon-plus"></span>
+          New App
+        </a>
+      </p>
+      <ul class="list-group">
+
+        {% if staffedApps.length === 0 %}
+          <li class="list-group-item">
+            <p class="lead">You are not a staff member of any apps</p>
+          </li>
+        {% endif %}
+
+        {% for app in staffedApps %}
+          {{ renderStaffedApp(app) }}
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+{% else %}
+  <p class="lead">You must login or register to authorize apps</p>
+{% endif %}
+
+<h1>Featured Apps</h1>
+
+<div class="row">
+  <div class="col-md-6">
+
+    <!-- BetterBets panel -->
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="media">
+          <div class="media-left">
+            <a href="/apps/14-betterbets">
+              <img class="media-object"
+                   src="/img/app-thumbnails/better-bets.png"
+                   alt="BetterBets screenshot"
+                   width="200"
+                   height="108"
+                   style="border: 2px solid #ccc; padding: 5px;"
+                   >
+            </a>
+          </div>
+          <div class="media-body">
+            <h4 class="media-heading">
+              <a href="/apps/14-betterbets">BetterBets.io</a>
+            </h4>
+            <p>
+              An innovative casino that offers a unique "Luck Forging" system that reduces the house edge to 0.1%. Rewards you with raffle tickets as you make bets.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /col -->
+  <div class="col-md-6">
+
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="media">
+          <div class="media-left">
+            <a href="/apps/47-luckybit-micro">
+              <img class="media-object"
+                   src="/img/app-thumbnails/luckybit-micro.png"
+                   alt="LuckyBit micro"
+                   width="200"
+                   height="108"
+                   style="border: 2px solid #ccc; padding: 5px;"
+                   >
+            </a>
+          </div>
+          <div class="media-body">
+            <h4 class="media-heading">
+              <a href="/apps/47-luckybit-micro">LuckyBit Micro</a>
+            </h4>
+            <p>
+              The renowned LuckyBit experience in pocket format!
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /col -->
+</div><!-- /row -->
+
+<!-- Second row -->
+
+<div class="row">
+	<div class="col-md-6">
+
+		<!-- DustDice panel -->
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<div class="media">
+					<div class="media-left">
+						<a href="/apps/1-dust-dice">
+							<img class="media-object"
+							     src="/img/app-thumbnails/dust-dice.png"
+							     alt="DustDice screenshot"
+							     width="200"
+							     height="108"
+							     style="border: 2px solid #ccc; padding: 5px;"
+								>
+						</a>
+					</div>
+					<div class="media-body">
+						<h4 class="media-heading">
+							<a href="/apps/1-dust-dice">DustDice.com</a>
+						</h4>
+						<p>
+							DustDice is a fresh, visually-driven approach to the traditional dice site where the UI is a graph of your balance.
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div><!-- /col -->
+
+	<!-- coinin -->
+
+	<div class="col-md-6">
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<div class="media">
+					<div class="media-left">
+						<a href="/apps/65-coining-a-dice">
+							<img class="media-object"
+							     src="/img/app-thumbnails/coinin.png"
+							     alt="Coinin.ga screenshot"
+							     width="200"
+							     height="108"
+							     style="border: 2px solid #ccc; padding: 5px;"
+								>
+						</a>
+					</div>
+					<div class="media-body">
+						<h4 class="media-heading">
+							<a href="/apps/65-coining-a-dice">Coining A Dice</a>
+						</h4>
+						<p>
+							A simple and colorful dice site
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="row">
+
+	<div class="col-md-6">
+
+		<!-- Plinkopot panel -->
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<div class="media">
+					<div class="media-left">
+						<a href="/apps/55-plinkopot">
+							<img class="media-object"
+							     src="/img/app-thumbnails/plinkopot.png"
+							     alt="BetterBets screenshot"
+							     width="200"
+							     height="108"
+							     style="border: 2px solid #ccc; padding: 5px;"
+								>
+						</a>
+					</div>
+					<div class="media-body">
+						<h4 class="media-heading">
+							<a href="/apps/55-plinkopot">PlinkoPot.com</a>
+						</h4>
+						<p>
+							Off-chain plinko with a 1% house edge
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div><!-- /col -->
+
+	<div class="col-md-6">
+		<!-- jackpot racer -->
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<div class="media">
+					<div class="media-left">
+						<a href="/apps/69-jackpotracer">
+							<img class="media-object"
+							     src="/img/app-thumbnails/jackpot-racer.jpg"
+							     alt="Jackpot racer screenshot"
+							     width="200"
+							     height="108"
+							     style="border: 2px solid #ccc; padding: 5px;"
+								>
+						</a>
+					</div>
+					<div class="media-body">
+						<h4 class="media-heading">
+							<a href="/apps/69-jackpotracer">JackpotRacer.com</a>
+						</h4>
+						<p>
+							A unique racing game with a jackpot!
+						</p>
+					</div>
+				</div>
+			</div>
+
+		</div><!-- /col -->
+	</div>
+</div>
+
+<div class="row">
+
+	<div class="col-md-6">
+
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<div class="media">
+					<div class="media-left">
+						<a href="/apps/85-qdicenet-quantum-dice">
+							<img class="media-object"
+							     src="/img/app-thumbnails/qdice.png"
+							     alt="Quantum Dice Banner"
+							     width="200"
+							     height="108"
+							     style="border: 2px solid #ccc; padding: 5px;"
+								>
+						</a>
+					</div>
+					<div class="media-body">
+						<h4 class="media-heading">
+							<a href="/apps/85-qdicenet-quantum-dice">Quantum Dice</a>
+						</h4>
+						<p>
+							A minimal house edge dice site with an elegant theme.
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div><!-- /col -->
+   <div class="col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <div class="media">
+            <div class="media-left">
+              <a href="/apps/529-roulettoshixyz">
+                <img class="media-object"
+                     src="/img/app-thumbnails/roulett.oshi.xyz.png"
+                     alt="Roulett.oshi thumb"
+                     width="200"
+                     height="108"
+                     style="border: 2px solid #ccc; padding: 5px;"
+                        >
+              </a>
+            </div>
+            <div class="media-body">
+              <h4 class="media-heading">
+                <a href="/apps/529-roulettoshixyz">Roulett.oshi.xyz</a>
+              </h4>
+              <p>
+                Roulette, with a unique bonus system that can lower the house edge to a razor 0.27%
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+  </div><!-- /col -->
+
+
+</div><!-- /row -->
+
+<div class="row">
+
+  <div class="col-md-6">
+
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="media">
+          <div class="media-left">
+            <a href="/apps/500-sharp-dice">
+              <img class="media-object"
+                   src="/img/app-thumbnails/sharp-dice.png"
+                   alt="Sharp Dice Thumb"
+                   width="200"
+                   height="108"
+                   style="border: 2px solid #ccc; padding: 5px;"
+                      >
+            </a>
+          </div>
+          <div class="media-body">
+            <h4 class="media-heading">
+              <a href="/apps/500-sharp-dice">Sharp Dice</a>
+            </h4>
+            <p>
+              A Sharp 0.1% House Edge on majority of bets. Packed with giveaways and promotions; SharpDice is your cutting edge Bitcoin Dice Site!
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /col -->
+
+</div><!-- /row -->
+
+
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

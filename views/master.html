@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+    <meta name="description" content="">
+    <link rel="icon" href="/favicon.ico">
+
+    <title>
+      {% if title %}
+        {{ title }} &mdash; MoneyPot
+      {% else %}
+      MoneyPot &mdash; Bitcoin Gambling Wallet & API
+      {% endif %}
+    </title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="/vendor/bootstrap/css/bootstrap-theme.css" rel="stylesheet">
+
+    <!-- MoneyPot-specific CSS -->
+    <link href="/css/bootstrap_overrides.css" rel="stylesheet">
+    <link href="/css/bootstrap_extensions.css" rel="stylesheet">
+    <link href="/css/twitter_typeahead.css" rel="stylesheet">
+    <link href="/css/general.css" rel="stylesheet">
+
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      {% if getBannerAnnouncement() %}
+        <div class="alert alert-{{ getBannerAnnouncement().type }}">
+          {{ getBannerAnnouncement().html }}
+        </div>
+      {% endif %}
+
+
+      <!-- Static navbar -->
+      <nav class="navbar navbar-default" role="navigation"
+           style="background-color: transparent; border: 0;">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">
+              <img src="/img/branding/grey-logo-30.png" style="display: inline-block;">
+              MoneyPot
+            </a>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li><a href="https://blog.moneypot.com">Blog</a></li>
+              <li class="{% if ctx.path === '/support' %}active{% endif %}">
+                <a href="/support">
+                  Support
+                </a>
+              </li>
+              <li class="{% if ctx.path === '/faq' %}active{% endif %}">
+                <a href="/faq">
+                  FAQ
+                </a>
+              </li>
+            </ul>
+
+            <!-- If user is logged in, show logout button -->
+            {% if ctx.currUser %}
+              <form style="padding-top:3px;"
+                    action="/me/logout"
+                    method="post"
+                    class="navbar-form pull-right">
+                {% if !ctx.state.isEnsureCurrUser %}
+                  <input type="hidden" name="redirect_to" value="{{ ctx.url }}">
+                {% endif %}
+                <button type="submit" class="btn-link">
+                  Logout
+                </button>
+              </form>
+              <div class="btn-group pull-right">
+                <a href="/me/account"
+                   class="btn btn-default navbar-btn">
+
+                  {% if ctx.currUser.role === 'admin' %}
+                    <span class="label label-primary" style="text-shadow: none;">Admin</span>
+                  {% endif %}
+
+                  {{ ctx.currUser.uname }}
+                </a>
+              </div>
+              <p class="navbar-text pull-right">
+                {{ Math.floor(ctx.currUser.balance)|formatSatoshis }} bits
+                <abbr data-toggle="tooltip"
+                      data-placement="bottom"
+                      class="balance-tooltip"
+                      title="You have<br>Wallet: {{ ctx.currUser.balance|formatSatoshis(0) }} bits<br>Apps: {{ ctx.currUser.total_auth_balance|formatSatoshis(0) }} bits<br>Total: {{ ctx.currUser.balance|add(ctx.currUser.total_auth_balance)|formatSatoshis(0) }} bits"
+                >?</abbr>
+              </p>
+            {% endif %}
+
+            <!-- If user is not logged in, show login/register controls -->
+            {% if !ctx.currUser && !hideLoginButtons %}
+              <div class="navbar-right">
+                <a class="btn btn-default" href="/login" id="login-btn">
+                  Login
+                </a>
+                <a class="btn btn-primary" href="/register" id="register-btn">
+                  Register
+                </a>
+              </div>
+            {% endif %}
+
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </nav><!-- /navbar -->
+
+      <!-- Display flash message -->
+      {% if ctx.flash && ctx.flash.message %}
+        <div class="alert alert-{{= ctx.flash.message[0] }}"
+             role="alert">
+          {{ ctx.flash.message[1] }}
+        </div>
+      {% endif %}
+
+      <!-- Embedded content is nested here -->
+      {% block embed %}{% endblock %}
+
+      <!-- Footer -->
+      <div id="global-footer">
+        MoneyPot S.L.R. is a fully incorporated Costa Rican gaming company (License No. 3-102-700828)
+      </div>
+
+    </div> <!-- /container -->
+
+    <!-- JS deps -->
+    <script src="/vendor/jquery/jquery-2.1.1.min.js"></script>
+    <script src="/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/vendor/typeahead/typeahead.bundle.js"></script>
+    <script src="/vendor/timeago/jquery.timeago.js"></script>
+    <script>
+      $.timeago.settings.allowFuture = true;
+      $.timeago.settings.strings = {
+        prefixAgo: null,
+        prefixFromNow: "in",
+        suffixAgo: "ago",
+        suffixFromNow: "",
+        seconds: "<1 min",
+        minute: "1 min",
+        minutes: "%d min",
+        hour: "1 hour",
+        hours: "%d hours",
+        day: "1 day",
+        days: "%d days",
+        month: "1 month",
+        months: "%d months",
+        year: "1 year",
+        years: "%d years",
+        wordSeparator: " ",
+        numbers: []
+      };
+
+      function formatSatoshis(n) {
+        var sat = Math.floor(n);
+        var decimals = sat % 100 === 0 ? 0 : 2;
+        return (n/100).toFixed(decimals).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+      }
+    </script>
+    <script type="text/javascript">
+      $('.balance-tooltip').tooltip({
+        html: true
+      });
+    </script>
+    {% block scripts %}{% endblock %}
+
+  </body>
+</html>

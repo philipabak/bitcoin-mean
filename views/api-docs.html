@@ -1,0 +1,828 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>MoneyPot API</title><link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"><link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"><link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,700|Inconsolata|Raleway:200"><style>/* Highlight.js Theme Tomorrow */
+.hljs-comment,.hljs-title{color:#8e908c}.hljs-variable,.hljs-attribute,.hljs-tag,.hljs-regexp,.ruby .hljs-constant,.xml .hljs-tag .hljs-title,.xml .hljs-pi,.xml .hljs-doctype,.html .hljs-doctype,.css .hljs-id,.css .hljs-class,.css .hljs-pseudo{color:#c82829}.hljs-number,.hljs-preprocessor,.hljs-pragma,.hljs-built_in,.hljs-literal,.hljs-params,.hljs-constant{color:#f5871f}.ruby .hljs-class .hljs-title,.css .hljs-rules .hljs-attribute{color:#eab700}.hljs-string,.hljs-value,.hljs-inheritance,.hljs-header,.ruby .hljs-symbol,.xml .hljs-cdata{color:#718c00}.css .hljs-hexcolor{color:#3e999f}.hljs-function,.python .hljs-decorator,.python .hljs-title,.ruby .hljs-function .hljs-title,.ruby .hljs-title .hljs-keyword,.perl .hljs-sub,.javascript .hljs-title,.coffeescript .hljs-title{color:#4271ae}.hljs-keyword,.javascript .hljs-function{color:#8959a8}.hljs{display:block;background:white;color:#4d4d4c;padding:.5em}.coffeescript .javascript,.javascript .xml,.tex .hljs-formula,.xml .javascript,.xml .vbscript,.xml .css,.xml .hljs-cdata{opacity:.5}</style><style>body,
+h4,
+h5 {
+  font-family: 'Roboto' sans-serif !important;
+}
+h1,
+h2,
+h3,
+.aglio {
+  font-family: 'Raleway' sans-serif !important;
+}
+h1 a,
+h2 a,
+h3 a,
+h4 a,
+h5 a {
+  display: none;
+}
+h1:hover a,
+h2:hover a,
+h3:hover a,
+h4:hover a,
+h5:hover a {
+  display: inline;
+}
+code {
+  color: #444;
+  background-color: #ddd;
+  font-family: 'Inconsolata' monospace !important;
+}
+a[data-target] {
+  cursor: pointer;
+}
+h4 {
+  font-size: 100%;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+.back-to-top {
+  position: fixed;
+  z-index: 1;
+  bottom: 0px;
+  right: 24px;
+  padding: 4px 8px;
+  background-color: #eee;
+  text-decoration: none !important;
+  border-top: 1px solid rgba(0,0,0,0.1);
+  border-left: 1px solid rgba(0,0,0,0.1);
+  border-right: 1px solid rgba(0,0,0,0.1);
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+.panel {
+  overflow: hidden;
+}
+.panel-heading code {
+  margin-left: 3px;
+  color: #c7254e;
+  background-color: rgba(255,255,255,0.7);
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+.panel-heading h3 {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+a.list-group-item:hover {
+  background-color: #f8f8f8;
+  border-left: 2px solid #555;
+  padding-left: 15px;
+}
+.indent {
+  display: block;
+  text-indent: 16px;
+}
+.list-group-item {
+  padding-left: 16px;
+}
+.list-group-item .toggle .open {
+  display: block;
+}
+.list-group-item .toggle .closed {
+  display: none;
+}
+.list-group-item.collapsed .toggle .open {
+  display: none;
+}
+.list-group-item.collapsed .toggle .closed {
+  display: block;
+}
+a.list-group-item {
+  font-size: 13px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+a.list-group-item.heading {
+  font-size: 15px;
+  background-color: #f5f5f5;
+}
+a.list-group-item.heading:hover {
+  background-color: #f8f8f8;
+}
+.list-group-item.collapse {
+  display: none;
+}
+.list-group-item.collapse.in {
+  display: block;
+}
+.list-group-item a span.closed {
+  display: none;
+}
+.list-group-item a span.open {
+  display: block;
+}
+.list-group-item a.collapsed span.closed {
+  display: block;
+}
+.list-group-item a.collapsed span.open {
+  display: none;
+}
+#nav {
+  width: inherit;
+  margin-top: 38px;
+  max-width: 255px;
+  top: 0;
+  bottom: 0;
+  padding-right: 12px;
+  padding-bottom: 12px;
+  overflow-y: auto;
+}
+@media (max-width: 1199px) {
+  #nav {
+    max-width: 212px;
+  }
+}
+</style></head><body><a href="#top" class="text-muted back-to-top"><i class="fa fa-toggle-up"></i>&nbsp;Back to top</a><div class="container"><div class="row"><div class="col-md-3"><nav id="nav" class="hidden-sm hidden-xs affix nav"><div class="list-group"><a data-toggle="" data-target="#creating-an-app/casino-menu" href="#creating-an-app/casino" class="list-group-item heading collapsed">Creating an App/Casino</a><div id="creating-an-app/casino-menu"></div></div><div class="list-group"><a data-toggle="" data-target="#authentication-menu" href="#authentication" class="list-group-item heading collapsed">Authentication</a><div id="authentication-menu"><a href="#authentication-client-side-apps" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item">Client Side Apps</a><a href="#authentication-server-side-apps" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item">Server Side Apps</a><a href="#authentication-redirect-user-to-authorize-page" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span>Redirect user to authorize page</a></div></div><div class="list-group"><a data-toggle="" data-target="#general-api-info-menu" href="#general-api-info" class="list-group-item heading collapsed">General API info</a><div id="general-api-info-menu"></div></div><div class="list-group"><a data-toggle="" data-target="#dialogs-menu" href="#dialogs" class="list-group-item heading collapsed">Dialogs</a><div id="dialogs-menu"><a href="#dialogs-deposit-form" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span>Deposit form</a><a href="#dialogs-withdraw-form" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span>Withdraw form</a></div></div><div class="list-group"><a data-toggle="" data-target="#v1-public-menu" href="#v1-public" class="list-group-item heading collapsed">v1 Public</a><div id="v1-public-menu"><a href="#v1-public-get-app-info" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span>Get app info</a><a href="#v1-public-get-bankroll" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span>Get bankroll</a><a href="#v1-public-get-token-info" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span>Get token info</a><a href="#v1-public-get-user-stats" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span>Get user stats</a><a href="#v1-public-make-a-faucet-claim" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-success"><i class="fa fa-plus"></i></span>Make a faucet claim</a><a href="#v1-public-get-list-of-app-bets" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span>Get list of app bets</a></div></div><div class="list-group"><a data-toggle="" data-target="#v1-auth-menu" href="#v1-auth" class="list-group-item heading collapsed">v1 Auth</a><div id="v1-auth-menu"><a href="#v1-auth-get-auth-info" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span>Get auth info</a><a href="#v1-auth-create-a-new-hash-for-betting" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-success"><i class="fa fa-plus"></i></span>Create a new hash for betting</a><a href="#v1-auth-check-if-hash-has-been-used" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span>Check if hash has been used</a><a href="#v1-auth-get-a-deposit-address" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span>Get a deposit address</a><a href="#v1-auth-tip-another-user" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-success"><i class="fa fa-plus"></i></span>Tip another user</a></div></div><div class="list-group"><a data-toggle="" data-target="#v1-bets-menu" href="#v1-bets" class="list-group-item heading collapsed">v1 Bets</a><div id="v1-bets-menu"><a href="#v1-bets-place-custom-bet" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-success"><i class="fa fa-plus"></i></span>Place custom bet</a><a href="#v1-bets-place-simple_dice-bet" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-success"><i class="fa fa-plus"></i></span>Place simple_dice bet</a><a href="#v1-bets-place-plinko-bet" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-success"><i class="fa fa-plus"></i></span>Place plinko bet</a><a href="#v1-bets-place-101_dice-bet" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-success"><i class="fa fa-plus"></i></span>Place 101_dice bet</a></div></div><p style="text-align: center; word-wrap: break-word;"><a href="https://api.moneypot.com">https://api.moneypot.com</a></p></nav></div><div class="col-md-8"><div><header><div class="page-header"><h1 id="top">MoneyPot API</h1></div></header><div class="description"><ul>
+<li><p>Homepage: <a href="https://www.moneypot.com">https://www.moneypot.com</a></p></li>
+<li><p>Latest API version: <code>v1</code></p></li>
+<li><p>API Endpoint: <code>https://api.moneypot.com</code></p></li>
+</ul>
+<p>For any support or account issues please use our <a href="/support">support</a> form, or for any general conversation and questions
+we use slack. Enter your email on <a href="https://slack.moneypot.com">https://slack.moneypot.com</a> to be sent an invitation to our group.</p>
+<p><strong>These API docs are a work in progress under active development.</strong></p>
+</div></div><div><div class="panel panel-default"><div class="panel-heading"><h3 id="creating-an-app/casino">Creating an App/Casino&nbsp;<a href="#creating-an-app/casino"><i class="fa fa-link"></i></a></h3></div><div class="panel-body"><p>To begin integrating with our API, you must first <a href="https://www.moneypot.com/apps/new">create an app</a>.</p>
+<p>Note: Feel free to create one just to play around with. We only add apps to our <a href="https://www.moneypot.com/apps">list of apps</a> once you ask us to review and approve it.</p>
+</div></div></div><div><div class="panel panel-default"><div class="panel-heading"><h3 id="authentication">Authentication&nbsp;<a href="#authentication"><i class="fa fa-link"></i></a></h3></div><div class="panel-body"><p>MoneyPot uses a modified OAuth 2.0 system for authentication.</p>
+<h4 id="authentication-client-side-apps">Client Side Apps&nbsp;<a href="#authentication-client-side-apps"><i class="fa fa-link"></i></a></h4><p>Client-side apps are apps where the users browser is directly communicating with MoneyPot’s server. This workflow is known
+as “implicit” in the OAuth terminology. Apps using this flow, should set the <code>response_type</code> to <code>token</code> in the app’s settings panel.</p>
+<p>For a user to be logged in and make API calls they require an unexpired <code>access_token</code>. Login is achieved by sending the user to:</p>
+<pre><code>https://www.moneypot.com/oauth/authorize?app_id=&lt;YOUR_APP_ID&gt;&amp;response_type=token&amp;state=&lt;RANDOM_STRING&gt;&amp;redirect_uri=&lt;REDIRECT_URI&gt;
+</code></pre>
+<p>and after they login, they will be redirected to your redirect URI:</p>
+<pre><code>&lt;YOUR_REDIRECT_URI&gt;#access_token=xxxx-xxxx-xxxx-xxxx&amp;expires_in=&lt;SECONDS&gt;&amp;state=&lt;RANDOM_STRING&gt;
+(The data is sent as hash parameters for your javascript app to process)
+</code></pre>
+<p>Access tokens typically expire in around 2 weeks.</p>
+<p>Note: All redirect_uri’s must be whitelisted in your app’s setting page.</p>
+<p>Important: The reason why the <code>implicit</code> flow uses hash fragments (<code>#</code>) is that the information is never transmitted to
+the server of &lt;YOUR_REDIRECT_URI&gt; but only the users browser. It is recommended that you parse out the<code>access_token</code> and <code>expires_in</code>
+and save to localStorage, and then strip it from the URL.</p>
+<h4 id="authentication-server-side-apps">Server Side Apps&nbsp;<a href="#authentication-server-side-apps"><i class="fa fa-link"></i></a></h4><p>Server-Side apps allow you to make API requests on a users behalf, rather than the the user making them themselves.
+This allows you much more control and flexibility, at the cost of maintaining your own server. This flow is known as the <code>confidential</code>
+flow.</p>
+<p>Apps using this flow, should set the <code>response_type</code> to <code>confidential</code> in the app’s settings panel.</p>
+<p>This flow does not use <code>access_token</code>s but rather uses your <code>app_secret</code> in API requests. First the user must login, and give permissions
+to your app. To do this you should send them to:</p>
+<pre><code>https://www.moneypot.com/oauth/authorize?app_id=&lt;YOUR_APP_ID&gt;&amp;response_type=confidential&amp;state=&lt;RANDOM_STRING&gt;&amp;redirect_uri=&lt;REDIRECT_URI&gt;
+</code></pre>
+<p>and after they login, they will be redirected to your redirect URI:</p>
+<pre><code>&lt;YOUR_REDIRECT_URI&gt;?confidential_token=xxxx-xxxx-xxxx-xxxx&amp;state=&lt;RANDOM_STRING&gt;
+(The data is sent as a query string for your server to process process)
+</code></pre>
+<p>The confidential token expires in a short amount of time (typically a couple minutes) and is not intended for reuse or storing. You should use the confidential token (And your app_secret) to get the users <code>auth_id</code></p>
+<h4 id="authentication-redirect-user-to-authorize-page">Redirect user to authorize page&nbsp;<a href="#authentication-redirect-user-to-authorize-page"><i class="fa fa-link"></i></a></h4><section id="authentication-redirect-user-to-authorize-page-get" class="panel panel-info"><div class="panel-heading"><div style="float:left"><a href="#authentication-redirect-user-to-authorize-page-get" class="btn btn-xs btn-primary">GET</a></div><div style="overflow:hidden"><code>/oauth/authorize</code></div></div><div class="panel-body"><p>This is not an API endpoint but rather an endpoint you must redirect a user to.</p>
+</div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>app_id</dt><dd><code>integer</code>&nbsp;<span class="required">(required)</span>&nbsp;</dd><dt>response_type</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<ul>
+<li><p>For client-side (implicit) apps, must be <code>token</code></p></li>
+<li><p>For server-side (confidential) apps, must be <code>confidential</code></p></li>
+</ul>
+</dd><dt>redirect_uri</dt><dd><code>string</code>&nbsp;<span>(optional)</span>&nbsp;<ul>
+<li><p>If not supplied, user will be redirected to your app’s <strong>first</strong> whitelisted <code>redirect_uri</code>, or if
+your application has no redirect_uris it will go to the copy-and-paste <a href="https://www.moneypot.com/oauth/debug">debug uri</a>:
+which will expose the raw token, for copy-and-paste</p></li>
+<li><p>If supplied, user will be redirected there but it must be one of your apps whitelisted <code>redirect_uris</code></p></li>
+</ul>
+</dd><dt>state</dt><dd><code>string</code>&nbsp;<span>(optional)</span>&nbsp;<ul>
+<li>An opaque string that will get sent back to your redirect_uri to preserve state or function as a anti csrf token</li>
+</ul>
+</dd></dl></li></ul><ul class="list-group"></ul></section></div></div></div><div><div class="panel panel-default"><div class="panel-heading"><h3 id="general-api-info">General API info&nbsp;<a href="#general-api-info"><i class="fa fa-link"></i></a></h3></div><div class="panel-body"><ul>
+<li><p>Parameter refers to a query string argument</p></li>
+<li><p>All requests must provide <code>access_token</code> or <code>app_secret</code> as a parameter (depending on if they are using the
+implicit or confidential flow, respectively). The one exception is the <code>/v1/claim-faucet</code> api where the <code>app_secret</code> should
+not be used, as requests come from the end user.</p></li>
+<li><p>All bodies for request and responses are JSON</p></li>
+<li><p>When making a request, using a <code>Content-Type</code> as <code>text/plain</code> will be interpreted the same way as <code>application/json</code>
+but prevent CORS preflight requests</p></li>
+<li><p>All bitcoin values are in satoshis.</p></li>
+<li><p>The <code>auth</code> <code>id</code> or <code>auth_id</code> is an immutable reference to the authorization a user gives your app. It can be used like a “user id”
+to uniquely identify a user, as it will never change. Even if a user disables your app, and later re-enables it, it will have
+the same auth id. Unlike a <code>uname</code> the <code>auth_id</code> is guaranteed to not change.</p></li>
+</ul>
+</div></div></div><div><div class="panel panel-default"><div class="panel-heading"><h3 id="dialogs">Dialogs&nbsp;<a href="#dialogs"><i class="fa fa-link"></i></a></h3></div><div class="panel-body"><p>Dialogs are popups that you can provide on your app that allow users to manage their Moneypot account without navigating away from your app.</p>
+<p><strong>To be notified when a user updates their balance</strong> (thus when your app should make an API call to fetch their latest balance): define the app window’s onmessage event handle, check if the event comes from moneypot.com, and then check if <code>event.data</code> is <code>'UPDATE_BALANCE'</code>:</p>
+<p>Example:</p>
+<pre><code class="language-javascript"><span class="hljs-built_in">window</span>.addEventListener(<span class="hljs-string">'message'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(event)</span> </span>{
+  <span class="hljs-keyword">if</span> (event.origin === <span class="hljs-string">'https://www.moneypot.com'</span> &amp;&amp; event.data === <span class="hljs-string">'UPDATE_BALANCE'</span>) {
+    <span class="hljs-comment">// ... Update user's balance ...</span>
+  }
+}, <span class="hljs-literal">false</span>);
+
+</code></pre>
+<p><strong>TIP</strong>: You generally want to give all of your dialogs the same <code>windowName</code> so that they all open within the same popup instead of creating a new popup for each different dialog.</p>
+<h4 id="dialogs-deposit-form">Deposit form&nbsp;<a href="#dialogs-deposit-form"><i class="fa fa-link"></i></a></h4><section id="dialogs-deposit-form-get" class="panel panel-info"><div class="panel-heading"><div style="float:left"><a href="#dialogs-deposit-form-get" class="btn btn-xs btn-primary">GET</a></div><div style="overflow:hidden"><code>/dialog/deposit?app_id=XXX</code></div></div><div class="panel-body"><p>The deposit form lets users transfer funds from their Moneypot wallet into your app.</p>
+<pre><code class="language-javascript"><span class="hljs-keyword">var</span> windowUrl = <span class="hljs-string">'https://www.moneypot.com/dialog/deposit?app_id=XXX'</span>;
+<span class="hljs-keyword">var</span> windowName = <span class="hljs-string">'manage-auth'</span>;
+<span class="hljs-keyword">var</span> windowOpts = <span class="hljs-string">'width=420,height=350,left=100,top=100'</span>;
+<span class="hljs-keyword">var</span> windowRef = <span class="hljs-built_in">window</span>.open(windowUrl, windowName, windowOpts);
+windowRef.focus();
+</code></pre>
+<p>It looks something like this:</p>
+<p><img src="https://www.moneypot.com/img/api-docs/deposit-dialog.png" alt="Deposit dialog"></p>
+<p>When a user successfully submits the deposit form, the <code>window.onmessage</code> event handler will receive an event where <code>event.origin === 'https://www.moneypot.com'</code> and <code>event.data === 'UPDATE_BALANCE'</code>.</p>
+</div><ul class="list-group"></ul></section><h4 id="dialogs-withdraw-form">Withdraw form&nbsp;<a href="#dialogs-withdraw-form"><i class="fa fa-link"></i></a></h4><section id="dialogs-withdraw-form-get" class="panel panel-info"><div class="panel-heading"><div style="float:left"><a href="#dialogs-withdraw-form-get" class="btn btn-xs btn-primary">GET</a></div><div style="overflow:hidden"><code>/dialog/withdraw?app_id=XXX</code></div></div><div class="panel-body"><p>The withdraw form lets users transfer funds from your app into their Moneypot wallet.</p>
+<pre><code class="language-javascript"><span class="hljs-keyword">var</span> windowUrl = <span class="hljs-string">'https://www.moneypot.com/dialog/withdraw?app_id=XXX'</span>;
+<span class="hljs-keyword">var</span> windowName = <span class="hljs-string">'manage-auth'</span>;
+<span class="hljs-keyword">var</span> windowOpts = <span class="hljs-string">'width=420,height=350,left=100,top=100'</span>;
+<span class="hljs-keyword">var</span> windowRef = <span class="hljs-built_in">window</span>.open(windowUrl, windowName, windowOpts);
+windowRef.focus();
+</code></pre>
+<p>It looks something like this:</p>
+<p><img src="https://www.moneypot.com/img/api-docs/withdraw-dialog.png" alt="Withdraw dialog"></p>
+<p>When a user successfully submits the withdraw form, the <code>window.onmessage</code> event handler will receive an event where <code>event.origin === 'https://www.moneypot.com'</code> and <code>event.data === 'UPDATE_BALANCE'</code>.</p>
+</div><ul class="list-group"></ul></section></div></div></div><div><div class="panel panel-default"><div class="panel-heading"><h3 id="v1-public">v1 Public&nbsp;<a href="#v1-public"><i class="fa fa-link"></i></a></h3></div><div class="panel-body"><p>These are publicly accessible endpoints, which require nothing more than the standard <code>app_secret</code> or <code>access_token</code></p>
+<hr>
+<h4 id="v1-public-get-app-info">Get app info&nbsp;<a href="#v1-public-get-app-info"><i class="fa fa-link"></i></a></h4><section id="v1-public-get-app-info-get" class="panel panel-info"><div class="panel-heading"><div style="float:left"><a href="#v1-public-get-app-info-get" class="btn btn-xs btn-primary">GET</a></div><div style="overflow:hidden"><code>/v1/app</code></div></div><div class="panel-body"><p>Get information on an app</p>
+</div><ul class="list-group"><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>implicit flow</code></strong><a data-toggle="collapse" data-target="#4528018e4ce6c1e324914583eba7a5ba" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="4528018e4ce6c1e324914583eba7a5ba" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>app_id (required, integer)
+The id of the app we are requesting information on</li>
+<li>access_token (required, uuid)</li>
+</ul></li>
+</ul>
+</div></li><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>confidential flow</code></strong><a data-toggle="collapse" data-target="#64ade05c5f91e568233878a2a1fbfb1c" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="64ade05c5f91e568233878a2a1fbfb1c" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>app_id (required, integer)
+The id of the app we are requesting information on</li>
+<li>app_secret
+The secret used to make requests</li>
+</ul></li>
+</ul>
+</div></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#d49ba577c15e2706e28ec491310190cb" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="d49ba577c15e2706e28ec491310190cb" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">1</span></span>,
+  "<span class="hljs-attribute">name</span>": <span class="hljs-value"><span class="hljs-string">"Some App"</span></span>,
+  "<span class="hljs-attribute">owners</span>": <span class="hljs-value">[
+      <span class="hljs-string">"some_user"</span>
+  ]</span>,
+  "<span class="hljs-attribute">verified_domain</span>": <span class="hljs-value"><span class="hljs-literal">null</span></span>,
+  "<span class="hljs-attribute">created_at</span>": <span class="hljs-value"><span class="hljs-string">"2015-04-21T09:15:20.827Z"</span></span>,
+}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>403</code></strong><a data-toggle="collapse" data-target="#241eca7b48471449738f0a37bf8bbde7" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="241eca7b48471449738f0a37bf8bbde7" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{ "<span class="hljs-attribute">error</span>": <span class="hljs-value"><span class="hljs-string">"INVALID_APP_ID"</span> </span>}
+</code></pre></li></ul></section><h4 id="v1-public-get-bankroll">Get bankroll&nbsp;<a href="#v1-public-get-bankroll"><i class="fa fa-link"></i></a></h4><section id="v1-public-get-bankroll-get" class="panel panel-info"><div class="panel-heading"><div style="float:left"><a href="#v1-public-get-bankroll-get" class="btn btn-xs btn-primary">GET</a></div><div style="overflow:hidden"><code>/v1/bankroll</code></div></div><div class="panel-body"><p>Gets the current bankroll information from MoneyPot.</p>
+<p>Which means invested profit is balance-invested</p>
+</div><ul class="list-group"><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>implicit flow</code></strong><a data-toggle="collapse" data-target="#408522f7d29e9c4d666c552c18f9cb9b" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="408522f7d29e9c4d666c552c18f9cb9b" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>access_token (required, uuid)</li>
+</ul></li>
+</ul>
+</div></li><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>confidential flow</code></strong><a data-toggle="collapse" data-target="#5696c3077a8a2a0dcc65d1d6b45c54ca" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="5696c3077a8a2a0dcc65d1d6b45c54ca" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>app_secret (required, uuid)</li>
+</ul></li>
+</ul>
+</div></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#258599a1edd1635b3d10a65a7d48b752" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="258599a1edd1635b3d10a65a7d48b752" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li><p><code>balance</code>  is how much currently is in the bankroll</p></li>
+<li><p><code>wagered</code> is how much has been bet in total</p></li>
+<li><p><code>invested</code> is how much has been invested, subtract what has been divested</p></li>
+</ul>
+<p>You can calculate the investor profit with <code>balance - invested</code></p>
+</div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">balance</span>": <span class="hljs-value"><span class="hljs-number">2835838782.20769</span></span>,
+    "<span class="hljs-attribute">wagered</span>": <span class="hljs-value"><span class="hljs-number">20001333.23</span></span>,
+    "<span class="hljs-attribute">invested</span>": <span class="hljs-value"><span class="hljs-number">10000.32</span>
+</span>}
+</code></pre></li></ul></section><h4 id="v1-public-get-token-info">Get token info&nbsp;<a href="#v1-public-get-token-info"><i class="fa fa-link"></i></a></h4><section id="v1-public-get-token-info-get" class="panel panel-info"><div class="panel-heading"><div style="float:left"><a href="#v1-public-get-token-info-get" class="btn btn-xs btn-primary">GET</a></div><div style="overflow:hidden"><code>/v1/token</code></div></div><div class="panel-body"><p>Gives information about either an <code>access_token</code> or a <code>confidential_token</code> or a <code>hashed_token</code>. It allows you to ensure that the token is valid,
+for your app and information about the user. A <code>hashed_token</code> is the sha256 hash of a token. A hashed token can be used for nothing more
+than using this API.</p>
+</div><ul class="list-group"><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>implicit flow</code></strong><a data-toggle="collapse" data-target="#2c27722895e525382841d7f858917a30" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="2c27722895e525382841d7f858917a30" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>access_token (required, uuid)
+The <code>access_token</code> to the request originates from, as well as the <code>access_token</code> to get information on</li>
+</ul></li>
+</ul>
+</div></li><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>confidential flow, get info on an access_token</code></strong><a data-toggle="collapse" data-target="#54a5f64307dd00d2c829a613934fcbde" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="54a5f64307dd00d2c829a613934fcbde" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>access_token (require, uuid)
+The <code>access_token</code> to get information on</li>
+<li>app_secret (required, uuid)</li>
+</ul></li>
+</ul>
+</div></li><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>confidential flow, get info on an confidential_token</code></strong><a data-toggle="collapse" data-target="#460c3456b6d1c590618a2f35ee06f5e6" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="460c3456b6d1c590618a2f35ee06f5e6" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>confidential_token (require, uuid)
+The <code>confidential_token</code> to get information on</li>
+<li>app_secret (required, uuid)</li>
+</ul></li>
+</ul>
+</div></li><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>confidential flow, get info on hashed token</code></strong><a data-toggle="collapse" data-target="#e946ac520bd550a6228a32731e6516d6" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="e946ac520bd550a6228a32731e6516d6" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>hashed_token (require, uuid)
+The <code>confidential_token</code> to get information on</li>
+<li>app_secret (required, uuid)</li>
+</ul></li>
+</ul>
+</div></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#93e5e36df32e88c2fe3bafb71325f2d1" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="93e5e36df32e88c2fe3bafb71325f2d1" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">token</span>": <span class="hljs-value"><span class="hljs-string">"82c5bbe7-d9fd-4f5d-a06c-e34e588db2fd"</span></span>,
+    "<span class="hljs-attribute">expires_in</span>": <span class="hljs-value"><span class="hljs-number">1149539</span></span>,
+    "<span class="hljs-attribute">expires_at</span>": <span class="hljs-value"><span class="hljs-string">"2015-05-18T23:28:12.873939+03:00"</span></span>,
+    "<span class="hljs-attribute">kind</span>": <span class="hljs-value"><span class="hljs-string">"access_token"</span></span>,
+    "<span class="hljs-attribute">auth</span>": <span class="hljs-value">{
+        "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">1</span></span>,
+        "<span class="hljs-attribute">app_id</span>": <span class="hljs-value"><span class="hljs-number">1</span></span>,
+        "<span class="hljs-attribute">user</span>": <span class="hljs-value">{
+            "<span class="hljs-attribute">uname</span>": <span class="hljs-value"><span class="hljs-string">"foo"</span></span>,
+            "<span class="hljs-attribute">balance</span>": <span class="hljs-value"><span class="hljs-number">312318.666666667</span></span>,
+            "<span class="hljs-attribute">unconfirmed_balance</span>": <span class="hljs-value"><span class="hljs-number">123</span></span>,
+            "<span class="hljs-attribute">unpaid</span>": <span class="hljs-value"><span class="hljs-number">0</span></span>,
+            "<span class="hljs-attribute">betted_count</span>": <span class="hljs-value"><span class="hljs-number">60</span></span>,
+            "<span class="hljs-attribute">betted_wager</span>": <span class="hljs-value"><span class="hljs-number">202220</span></span>,
+            "<span class="hljs-attribute">betted_ev</span>": <span class="hljs-value">-<span class="hljs-number">2022.18208660373</span></span>,
+            "<span class="hljs-attribute">betted_profit</span>": <span class="hljs-value"><span class="hljs-number">62318.6666666666</span></span>,
+            "<span class="hljs-attribute">role</span>": <span class="hljs-value"><span class="hljs-string">"member"</span>
+        </span>}
+    </span>}
+</span>}
+</code></pre></li></ul></section><h4 id="v1-public-get-user-stats">Get user stats&nbsp;<a href="#v1-public-get-user-stats"><i class="fa fa-link"></i></a></h4><section id="v1-public-get-user-stats-get" class="panel panel-info"><div class="panel-heading"><div style="float:left"><a href="#v1-public-get-user-stats-get" class="btn btn-xs btn-primary">GET</a></div><div style="overflow:hidden"><code>/v1/user-stats</code></div></div><div class="panel-body"><p>Get stats on a user (scoped to the same app)</p>
+</div><ul class="list-group"><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>implicit flow</code></strong><a data-toggle="collapse" data-target="#95375beddaeaa35538dd8b6892505d8a" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="95375beddaeaa35538dd8b6892505d8a" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>uname (required, string)
+The uname of the user we are requesting information on. Will get information scoped to the app of the access_token</li>
+<li>access_token (required, uuid)</li>
+</ul></li>
+</ul>
+</div></li><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>confidential flow</code></strong><a data-toggle="collapse" data-target="#ec371aacbfe6b65742137d343eb39ec2" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="ec371aacbfe6b65742137d343eb39ec2" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>uname (required, string)
+The uname of the user we are requesting information on. Will get information scoped to the app of the app_secret</li>
+<li>app_secret
+The secret used to make requests</li>
+</ul></li>
+</ul>
+</div></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#83a489c60aaee1c1c1e7a2dda769c704" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="83a489c60aaee1c1c1e7a2dda769c704" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">auth_id</span>": <span class="hljs-value"><span class="hljs-number">237</span></span>,
+  "<span class="hljs-attribute">uname</span>": <span class="hljs-value"><span class="hljs-string">"foo"</span></span>,
+  "<span class="hljs-attribute">betted_count</span>": <span class="hljs-value"><span class="hljs-number">37</span></span>,
+  "<span class="hljs-attribute">betted_wager</span>": <span class="hljs-value"><span class="hljs-number">0</span></span>,
+  "<span class="hljs-attribute">betted_ev</span>": <span class="hljs-value">-<span class="hljs-number">1410.18092605379</span></span>,
+  "<span class="hljs-attribute">betted_profit</span>": <span class="hljs-value"><span class="hljs-number">41472.6666666667</span>
+</span>}
+</code></pre></li></ul></section><h4 id="v1-public-make-a-faucet-claim">Make a faucet claim&nbsp;<a href="#v1-public-make-a-faucet-claim"><i class="fa fa-link"></i></a></h4><p>Note: faucet claims are rated limited based on the ip address. For this reason a confidential servers should
+<em>not</em> make the request itself, but have the user do it. They <strong>must not</strong> give users their app_secret for making the request.</p>
+<p>The faucet feature is based on google’s recaptcha, to use it you will need to sign up to google recaptcha and provide
+the recaptcha secret in your apps control panel.</p>
+<p>The faucet currently be claimed no more than once every 5 minutes</p>
+<section id="v1-public-make-a-faucet-claim-post" class="panel panel-success"><div class="panel-heading"><div style="float:left"><a href="#v1-public-make-a-faucet-claim-post" class="btn btn-xs btn-success">POST</a></div><div style="overflow:hidden"><code>/v1/claim-faucet</code></div></div><ul class="list-group"><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>implicit flow</code></strong><a data-toggle="collapse" data-target="#074306d12dfcdace3972e5aace9e27f2" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="074306d12dfcdace3972e5aace9e27f2" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>access_token (required, uuid)</li>
+</ul></li>
+</ul>
+</div><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">response</span>": <span class="hljs-value"><span class="hljs-string">"the recaptcha response"</span>
+</span>}
+</code></pre></li><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>confidential flow</code></strong><a data-toggle="collapse" data-target="#85266c2fc7534a7dafb970569d2d94bb" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="85266c2fc7534a7dafb970569d2d94bb" class="list-group-item panel-collapse collapse"><div class="description"><p>Note: The app_secret is <strong>not</strong> used, as this should come from the user</p>
+<ul>
+<li>Parameters
+<ul>
+<li>auth_id (required, integer)</li>
+</ul></li>
+</ul>
+</div><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">response</span>": <span class="hljs-value"><span class="hljs-string">"the recaptcha response"</span>
+</span>}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#88c7e4c1b95a430c62e162272fe975ac" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="88c7e4c1b95a430c62e162272fe975ac" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+   "<span class="hljs-attribute">claim_id</span>": <span class="hljs-value"><span class="hljs-number">2343</span></span>,
+   "<span class="hljs-attribute">amount</span>": <span class="hljs-value"><span class="hljs-number">200</span>
+</span>}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>403</code></strong><a data-toggle="collapse" data-target="#cba7c6ebf241720070fc956cdb5f84e1" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="cba7c6ebf241720070fc956cdb5f84e1" class="list-group-item panel-collapse collapse"><div class="description"><p>Where “error_code” is one of:</p>
+<ul>
+<li><p>“FAUCET_ALREADY_CLAIMED”  (faucet claimed in the last 5 minutes)</p></li>
+<li><p>“INVALID_AUTH_ID”</p></li>
+<li><p>“INVALID_ACCESS_TOKEN”</p></li>
+<li><p>“NO_CONFIGURED_RECAPTCHA_SECRET” ( app owner needs to set this in the control panel)</p></li>
+<li><p>“INVALID_INPUT_RESPONSE”   ( Google has rejected the response provided as invalid)</p></li>
+</ul>
+</div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+   "<span class="hljs-attribute">error</span>": <span class="hljs-value"><span class="hljs-string">"error_code"</span>
+</span>}
+</code></pre></li></ul></section><h4 id="v1-public-get-list-of-app-bets">Get list of app bets&nbsp;<a href="#v1-public-get-list-of-app-bets"><i class="fa fa-link"></i></a></h4><section id="v1-public-get-list-of-app-bets-get" class="panel panel-info"><div class="panel-heading"><div style="float:left"><a href="#v1-public-get-list-of-app-bets-get" class="btn btn-xs btn-primary">GET</a></div><div style="overflow:hidden"><code>/v1/list-bets</code></div></div><div class="panel-body"><p>Return a list of bets from an app</p>
+</div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>app_id</dt><dd><code>integer</code>&nbsp;<span class="required">(required)</span>&nbsp;<ul>
+<li>Show the bets related only to this app id</li>
+</ul>
+</dd><dt>auth_id</dt><dd><code>integer</code>&nbsp;<span>(optional)</span>&nbsp;<ul>
+<li>Optionally filter the bets to this auth_id</li>
+</ul>
+</dd><dt>uname</dt><dd><code>string</code>&nbsp;<span>(optional)</span>&nbsp;<ul>
+<li>Optionally filter the bets to this uname, if you know the auth_id it is preferred to use auth_id parameter</li>
+</ul>
+</dd><dt>greater_than</dt><dd><code>integer</code>&nbsp;<span>(optional)</span>&nbsp;<ul>
+<li>The bet id it must be greater than</li>
+</ul>
+</dd><dt>less_than</dt><dd><code>integer</code>&nbsp;<span>(optional)</span>&nbsp;<ul>
+<li>The bet id it must be less than</li>
+</ul>
+</dd><dt>order_by</dt><dd><code>string</code>&nbsp;<span>(optional)</span>&nbsp;<ul>
+<li>order by <code>asc</code> or <code>desc</code>, if not specified will default to <code>desc</code></li>
+</ul>
+</dd><dt>limit</dt><dd><code>integer</code>&nbsp;<span>(optional)</span>&nbsp;<ul>
+<li>show only <code>limit</code> results. Must be between 1 and 100. Defaults to 100</li>
+</ul>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>confidential flow</code></strong><a data-toggle="collapse" data-target="#6947c13ae243c7d53ea302a1544c609c" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="6947c13ae243c7d53ea302a1544c609c" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Extra parameters
+<ul>
+<li>app_secret (uuid)</li>
+</ul></li>
+</ul>
+</div></li><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>implicit flow</code></strong><a data-toggle="collapse" data-target="#51fd18781cd9397cde015a0165a46f94" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="51fd18781cd9397cde015a0165a46f94" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Extra parameters
+<ul>
+<li>access_token (uuid)</li>
+</ul></li>
+</ul>
+</div></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#e6386bf18c48e4f14ddf21a7d776dbf0" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="e6386bf18c48e4f14ddf21a7d776dbf0" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>[
+    {
+         "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">11</span></span>,
+         "<span class="hljs-attribute">auth_id</span>": <span class="hljs-value"><span class="hljs-number">1</span></span>,
+         "<span class="hljs-attribute">kind</span>": <span class="hljs-value">'simple_dice'</span>,
+         "<span class="hljs-attribute">client_seed</span>": <span class="hljs-value"><span class="hljs-number">0</span></span>,
+         "<span class="hljs-attribute">wager</span>": <span class="hljs-value"><span class="hljs-number">1</span></span>,
+         "<span class="hljs-attribute">ev</span>": <span class="hljs-value">-<span class="hljs-number">0.01</span></span>,
+         "<span class="hljs-attribute">profit</span>": <span class="hljs-value">-<span class="hljs-number">1</span></span>,
+         "<span class="hljs-attribute">app_profit</span>": <span class="hljs-value"><span class="hljs-number">0.005</span></span>,
+         "<span class="hljs-attribute">bankroll_profit</span>": <span class="hljs-value"><span class="hljs-number">0.99</span></span>,
+         "<span class="hljs-attribute">secret</span>": <span class="hljs-value"><span class="hljs-number">2192702185</span></span>,
+         "<span class="hljs-attribute">salt</span>": <span class="hljs-value"><span class="hljs-string">"b57229ccc2087d3521bec47044a558bf"</span></span>,
+         "<span class="hljs-attribute">created_at</span>": <span class="hljs-value"><span class="hljs-string">"2015-07-10T20:52:13.444Z"</span></span>,
+         "<span class="hljs-attribute">user_id</span>": <span class="hljs-value"><span class="hljs-number">1</span></span>,
+         "<span class="hljs-attribute">app_id</span>": <span class="hljs-value"><span class="hljs-number">1</span></span>,
+         "<span class="hljs-attribute">uname</span>": <span class="hljs-value"><span class="hljs-string">"foo"</span></span>,
+         "<span class="hljs-attribute">raw_outcome</span>": <span class="hljs-value"><span class="hljs-number">2192702185</span></span>,
+         "<span class="hljs-attribute">outcome</span>": <span class="hljs-value"><span class="hljs-number">51.05</span></span>,
+         "<span class="hljs-attribute">cond</span>": <span class="hljs-value"><span class="hljs-string">"&lt;"</span></span>,
+         "<span class="hljs-attribute">target</span>": <span class="hljs-value"><span class="hljs-number">49.5</span>
+     </span>}
+]
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>403</code></strong><a data-toggle="collapse" data-target="#a9d0f6618feba3fa3584a9e74926c1f3" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="a9d0f6618feba3fa3584a9e74926c1f3" class="list-group-item panel-collapse collapse"><div class="description"><p>If the auth has been disabled, and you can not get information</p>
+</div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{ "<span class="hljs-attribute">error</span>": <span class="hljs-value"><span class="hljs-string">"AUTH_NOT_ENABLED"</span> </span>}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>403</code></strong><a data-toggle="collapse" data-target="#a86f43307fd00459acfdb9cafb1fa63a" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="a86f43307fd00459acfdb9cafb1fa63a" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{ "<span class="hljs-attribute">error</span>": <span class="hljs-value"><span class="hljs-string">"INVALID_AUTH_ID_OR_SECRET"</span> </span>}
+</code></pre></li></ul></section></div></div></div><div><div class="panel panel-default"><div class="panel-heading"><h3 id="v1-auth">v1 Auth&nbsp;<a href="#v1-auth"><i class="fa fa-link"></i></a></h3></div><div class="panel-body"><p>These end points are scoped specific to a particular <code>auth</code>. They can be accessed by providing a valid <code>access_token</code>
+or (<code>auth_id</code> and <code>app_secret</code>)  by the query string</p>
+<hr>
+<h4 id="v1-auth-get-auth-info">Get auth info&nbsp;<a href="#v1-auth-get-auth-info"><i class="fa fa-link"></i></a></h4><section id="v1-auth-get-auth-info-get" class="panel panel-info"><div class="panel-heading"><div style="float:left"><a href="#v1-auth-get-auth-info-get" class="btn btn-xs btn-primary">GET</a></div><div style="overflow:hidden"><code>/v1/auth</code></div></div><div class="panel-body"><p>Gets information about the auth</p>
+</div><ul class="list-group"><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>confidential flow</code></strong><a data-toggle="collapse" data-target="#0550c7412af2ec5cb4bfca03136eeea4" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="0550c7412af2ec5cb4bfca03136eeea4" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>auth_id (integer)</li>
+<li>app_secret (uuid)</li>
+</ul></li>
+</ul>
+</div></li><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>implicit flow</code></strong><a data-toggle="collapse" data-target="#f8d33b3ab77535f89a255c80d792b121" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="f8d33b3ab77535f89a255c80d792b121" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>access_token (uuid)  Gets the current auth information</li>
+</ul></li>
+</ul>
+</div></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#12a9b8a759bf326372c2e129af90d977" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="12a9b8a759bf326372c2e129af90d977" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">1</span></span>,
+    "<span class="hljs-attribute">app_id</span>": <span class="hljs-value"><span class="hljs-number">1</span></span>,
+    "<span class="hljs-attribute">user</span>": <span class="hljs-value">{
+        "<span class="hljs-attribute">uname</span>": <span class="hljs-value"><span class="hljs-string">"foo"</span></span>,
+        "<span class="hljs-attribute">balance</span>": <span class="hljs-value"><span class="hljs-number">312318.666666667</span></span>,
+        "<span class="hljs-attribute">unpaid</span>": <span class="hljs-value"><span class="hljs-number">0</span></span>,
+        "<span class="hljs-attribute">betted_count</span>": <span class="hljs-value"><span class="hljs-number">60</span></span>,
+        "<span class="hljs-attribute">betted_wager</span>": <span class="hljs-value"><span class="hljs-number">202220</span></span>,
+        "<span class="hljs-attribute">betted_ev</span>": <span class="hljs-value">-<span class="hljs-number">2022.18208660373</span></span>,
+        "<span class="hljs-attribute">betted_profit</span>": <span class="hljs-value"><span class="hljs-number">62318.6666666666</span>
+    </span>}
+</span>}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>403</code></strong><a data-toggle="collapse" data-target="#e07fb179bdbb2d783232a53a94c0f76f" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="e07fb179bdbb2d783232a53a94c0f76f" class="list-group-item panel-collapse collapse"><div class="description"><p>If the auth has been disabled, and you can not get information</p>
+</div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{ "<span class="hljs-attribute">error</span>": <span class="hljs-value"><span class="hljs-string">"AUTH_NOT_ENABLED"</span> </span>}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>403</code></strong><a data-toggle="collapse" data-target="#8ae269e336236a9ad6f9ad8940d045d2" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="8ae269e336236a9ad6f9ad8940d045d2" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{ "<span class="hljs-attribute">error</span>": <span class="hljs-value"><span class="hljs-string">"INVALID_AUTH_ID_OR_SECRET"</span> </span>}
+</code></pre></li></ul></section><h4 id="v1-auth-create-a-new-hash-for-betting">Create a new hash for betting&nbsp;<a href="#v1-auth-create-a-new-hash-for-betting"><i class="fa fa-link"></i></a></h4><section id="v1-auth-create-a-new-hash-for-betting-post" class="panel panel-success"><div class="panel-heading"><div style="float:left"><a href="#v1-auth-create-a-new-hash-for-betting-post" class="btn btn-xs btn-success">POST</a></div><div style="overflow:hidden"><code>/v1/hashes</code></div></div><div class="panel-body"><p>Create a new provably fair betting hash</p>
+</div><ul class="list-group"><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>implicit flow</code></strong><a data-toggle="collapse" data-target="#489e7399f482270e13a78ee05ebc7025" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="489e7399f482270e13a78ee05ebc7025" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>access_token (required, uuid)</li>
+</ul></li>
+</ul>
+</div></li><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>confidential flow</code></strong><a data-toggle="collapse" data-target="#7ca9a7aa1ace0a86de90bcf9b1faa0cf" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="7ca9a7aa1ace0a86de90bcf9b1faa0cf" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>auth_id (required, integer)</li>
+<li>app_secret (required, uuid)</li>
+</ul></li>
+</ul>
+</div></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#042004cb4eb65bf4fd6ce037521a09cf" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="042004cb4eb65bf4fd6ce037521a09cf" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+   "<span class="hljs-attribute">hash</span>": <span class="hljs-value"><span class="hljs-string">"adad8e8016690d23581de9dc08ba2df3cb1b5b945158e7463e0054d74a5c734d"</span>
+</span>}
+</code></pre></li></ul></section><h4 id="v1-auth-check-if-hash-has-been-used">Check if hash has been used&nbsp;<a href="#v1-auth-check-if-hash-has-been-used"><i class="fa fa-link"></i></a></h4><section id="v1-auth-check-if-hash-has-been-used-get" class="panel panel-info"><div class="panel-heading"><div style="float:left"><a href="#v1-auth-check-if-hash-has-been-used-get" class="btn btn-xs btn-primary">GET</a></div><div style="overflow:hidden"><code>/v1/hashes</code></div></div><div class="panel-body"><p>If you have a hash but want to know if it has been consumed by a bet,
+this endpoint will:</p>
+<ul>
+<li><p>Return a 200 response if the hash has not yet been used</p></li>
+<li><p>Return a 404 response if the hash has been used by a bet</p></li>
+</ul>
+</div><ul class="list-group"><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>implicit flow</code></strong><a data-toggle="collapse" data-target="#e465eab5b256d05cc08f7942f0b6c696" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="e465eab5b256d05cc08f7942f0b6c696" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>access_token (required, uuid)</li>
+<li>bet_hash (required, string)</li>
+</ul></li>
+</ul>
+</div></li><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>confidential flow</code></strong><a data-toggle="collapse" data-target="#8d62b53a8448621c1c5bab372bf89b53" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="8d62b53a8448621c1c5bab372bf89b53" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>auth_id (required, integer)</li>
+<li>app_secret (required, uuid)</li>
+<li>bet_hash (required, string)</li>
+</ul></li>
+</ul>
+</div></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#793fee2fcf16a91b62b6624a95708a0e" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="793fee2fcf16a91b62b6624a95708a0e" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+   "<span class="hljs-attribute">auth_id</span>": <span class="hljs-value"><span class="hljs-number">42</span></span>,
+   "<span class="hljs-attribute">hash</span>": <span class="hljs-value"><span class="hljs-string">"adad8e8016690d23581de9dc08ba2df3cb1b5b945158e7463e0054d74a5c734d"</span></span>,
+   "<span class="hljs-attribute">created_at</span>": <span class="hljs-value"><span class="hljs-string">"2015-08-06T00:57:01.583Z"</span>
+</span>}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>404</code></strong><a data-toggle="collapse" data-target="#428a0adc8dcb919ad002d19308e4e2f7" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="428a0adc8dcb919ad002d19308e4e2f7" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code><span class="hljs-string">"BET_HASH_NOT_FOUND"</span>
+</code></pre></li></ul></section><h4 id="v1-auth-get-a-deposit-address">Get a deposit address&nbsp;<a href="#v1-auth-get-a-deposit-address"><i class="fa fa-link"></i></a></h4><section id="v1-auth-get-a-deposit-address-get" class="panel panel-info"><div class="panel-heading"><div style="float:left"><a href="#v1-auth-get-a-deposit-address-get" class="btn btn-xs btn-primary">GET</a></div><div style="overflow:hidden"><code>/v1/deposit-address</code></div></div><div class="panel-body"><p>Returns the latest generated address which can be used to deposit directly into this auth. Deposit address can be reused
+but it is not recommended.</p>
+</div><ul class="list-group"><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>implicit flow</code></strong><a data-toggle="collapse" data-target="#1babc7a6e49507752ae3663fcd31d517" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="1babc7a6e49507752ae3663fcd31d517" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>access_token (required, uuid)</li>
+</ul></li>
+</ul>
+</div></li><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>confidential flow</code></strong><a data-toggle="collapse" data-target="#be5886927166ef9960792d818b1e6c24" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="be5886927166ef9960792d818b1e6c24" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>auth_id (required, integer)</li>
+<li>app_secret (required, uuid)</li>
+</ul></li>
+</ul>
+</div></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#ff89a3d2ceb1debf45b64cc4d177cf8f" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="ff89a3d2ceb1debf45b64cc4d177cf8f" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+   "<span class="hljs-attribute">deposit_address</span>": <span class="hljs-value"><span class="hljs-string">"1bitcoineateraddressdontsendf59kue"</span>
+</span>}
+</code></pre></li></ul></section><h4 id="v1-auth-tip-another-user">Tip another user&nbsp;<a href="#v1-auth-tip-another-user"><i class="fa fa-link"></i></a></h4><section id="v1-auth-tip-another-user-post" class="panel panel-success"><div class="panel-heading"><div style="float:left"><a href="#v1-auth-tip-another-user-post" class="btn btn-xs btn-success">POST</a></div><div style="overflow:hidden"><code>/v1/tip</code></div></div><div class="panel-body"><p>Send a tip to a user (by <code>uname</code>) an <code>amount</code> of satoshis, in the same application</p>
+</div><ul class="list-group"><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>implicit flow</code></strong><a data-toggle="collapse" data-target="#a3f519c2ba2adaf2a8539851ca38c6c6" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="a3f519c2ba2adaf2a8539851ca38c6c6" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>access_token (required, uuid)</li>
+</ul></li>
+</ul>
+</div><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">uname</span>": <span class="hljs-value"><span class="hljs-string">"Ryan"</span></span>,
+    "<span class="hljs-attribute">amount</span>": <span class="hljs-value"><span class="hljs-number">50005</span>
+</span>}
+
+</code></pre></li><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>confidential flow</code></strong><a data-toggle="collapse" data-target="#16f49e865703c90d8d1aaad59a0f4458" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="16f49e865703c90d8d1aaad59a0f4458" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>auth_id (required, integer)</li>
+<li>app_secret (required, uuid)</li>
+</ul></li>
+</ul>
+</div><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">uname</span>": <span class="hljs-value"><span class="hljs-string">"Ryan"</span></span>,
+    "<span class="hljs-attribute">amount</span>": <span class="hljs-value"><span class="hljs-number">50005</span>
+</span>}
+
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#e7d4106b99413cc89d907d9a3e5b8ca0" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="e7d4106b99413cc89d907d9a3e5b8ca0" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">2455</span></span>,
+    "<span class="hljs-attribute">from</span>": <span class="hljs-value"><span class="hljs-string">"sending_uname"</span></span>,
+    "<span class="hljs-attribute">to</span>": <span class="hljs-value"><span class="hljs-string">"target_uname"</span></span>,
+    "<span class="hljs-attribute">amount</span>": <span class="hljs-value"><span class="hljs-number">2000</span></span>,
+    "<span class="hljs-attribute">created_at</span>": <span class="hljs-value"><span class="hljs-string">"2015-05-11T22:48:41.794Z"</span>
+</span>}
+</code></pre></li></ul></section></div></div></div><div><div class="panel panel-default"><div class="panel-heading"><h3 id="v1-bets">v1 Bets&nbsp;<a href="#v1-bets"><i class="fa fa-link"></i></a></h3></div><div class="panel-body"><p>These endpoints expect either the parameter <code>access_token</code> OR (<code>app_secret</code> AND <code>auth_id</code>)</p>
+<p>Furthermore in the body they all require:</p>
+<ul>
+<li><p><code>wager</code>  (required, float) How much the auth is betting</p></li>
+<li><p><code>hash</code> (required, string) Which provably fair hash we are betting against (got from <code>/v1/hashes</code> or the <code>next_hash</code> from a previous bet)</p></li>
+<li><p><code>client_seed</code> (required, 32 bit unsigned int) a  number (0 to (2^32)-1) How much to shift the result (for provably fair)</p></li>
+<li><p><code>max_subsidy</code> (optional, float) a value (in satoshis) of the most your app <strong>is willing to pay</strong> for this bet to be placed. This money
+is given to investors, from your app, when otherwise the bet would be too unattractive for investors to accept. We
+minimize the total subsidy given so his functions a pure limit. This defaults to 0, and is only settable <em>in the confidential flow</em>.
+It can also be set to a negative number, if you want the bet to be rejected unless you make a certain amount of profit.</p></li>
+</ul>
+<p>All bets apis return:</p>
+<ul>
+<li><p><code>id</code> (integer)</p></li>
+<li><p><code>outcome</code> The final outcome for the api</p></li>
+<li><p><code>secret</code> (string) the original provably fair secret the hash was based on</p></li>
+<li><p><code>salt</code> (string) the salt the <code>secret</code> was protected with</p></li>
+<li><p><code>next_hash</code> (string) a new hash, which can be used for placing the next bet</p></li>
+<li><p><code>profit</code> (number) How much money the <em>auth</em>  (user) made from this bet</p></li>
+</ul>
+<p>Note: Bets currently return a deprecated <code>bet_id</code>, please switch using <code>id</code></p>
+<p>“error_code” can be:</p>
+<ul>
+<li><p><code>&quot;NOT_ENOUGH_BALANCE&quot;</code>  (If the auth can’t make the bet, it doesn’t have enough money)</p></li>
+<li><p><code>&quot;INVALID_ACCESS_TOKEN&quot;</code>  (implicit flow)</p></li>
+<li><p><code>&quot;INVALID_AUTH_ID_OR_SECRET&quot;</code> (confidential flow)</p></li>
+</ul>
+<hr>
+<h4 id="v1-bets-place-custom-bet">Place custom bet&nbsp;<a href="#v1-bets-place-custom-bet"><i class="fa fa-link"></i></a></h4><section id="v1-bets-place-custom-bet-post" class="panel panel-success"><div class="panel-heading"><div style="float:left"><a href="#v1-bets-place-custom-bet-post" class="btn btn-xs btn-success">POST</a></div><div style="overflow:hidden"><code>/v1/bets/custom</code></div></div><div class="panel-body"><p>A custom bet is the most flexible for all bet types. With this API you can provide an array of <code>payouts</code> which are a list
+of possibly <em>overlapping</em> ranges, and how much money to win if it lands in this range.</p>
+<p>Each <code>payout</code> in <code>payouts</code> has three fields:</p>
+<ul>
+<li><p><code>from</code> (required, 32 bit unsigned integer)  The start of the range (inclusive)</p></li>
+<li><p><code>to</code> (required, 1 to 2^32) The end of the range, exclusive</p></li>
+<li><p><code>value</code> (required, number) The amount of satoshis to win, if the final outcome is in this range</p></li>
+</ul>
+<p>If ranges are overlapping, multiple payouts can be won in a single game.</p>
+</div><ul class="list-group"><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>confidential flow</code></strong><a data-toggle="collapse" data-target="#abe10f8a6c860947384ae62feb456ec5" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="abe10f8a6c860947384ae62feb456ec5" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>auth_id (required, integer)</li>
+<li>app_secret (required, uuid)</li>
+</ul></li>
+</ul>
+</div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">client_seed</span>": <span class="hljs-value"><span class="hljs-number">123456789</span></span>,
+  "<span class="hljs-attribute">hash</span>": <span class="hljs-value"><span class="hljs-string">"4e8ce7094c5781bd89169434d0403c0b29fc96f538b5c67623563a0c59bb1537"</span></span>,
+  "<span class="hljs-attribute">payouts</span>": <span class="hljs-value">[
+    { "<span class="hljs-attribute">from</span>": <span class="hljs-value"><span class="hljs-number">0</span></span>, "<span class="hljs-attribute">to</span>": <span class="hljs-value"><span class="hljs-number">2147483648</span></span>, "<span class="hljs-attribute">value</span>": <span class="hljs-value"><span class="hljs-number">1100</span> </span>},
+    { "<span class="hljs-attribute">from</span>": <span class="hljs-value"><span class="hljs-number">0</span></span>, "<span class="hljs-attribute">to</span>": <span class="hljs-value"><span class="hljs-number">400648</span></span>, "<span class="hljs-attribute">value</span>": <span class="hljs-value"><span class="hljs-number">20000</span> </span>}
+  ]</span>,
+  "<span class="hljs-attribute">wager</span>": <span class="hljs-value"><span class="hljs-number">1000</span></span>,
+  "<span class="hljs-attribute">max_subsidy</span>": <span class="hljs-value"><span class="hljs-number">10</span>
+</span>}
+</code></pre></li><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>implicit flow</code></strong><a data-toggle="collapse" data-target="#c52458c7158fcca697b505f8bf188a24" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="c52458c7158fcca697b505f8bf188a24" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>access_token (required, uuid)</li>
+</ul></li>
+</ul>
+</div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">client_seed</span>": <span class="hljs-value"><span class="hljs-number">123456</span></span>,
+  "<span class="hljs-attribute">hash</span>": <span class="hljs-value"><span class="hljs-string">"4e8ce7094c5781bd89169434d0403c0b29fc96f538b5c67623563a0c59bb1537"</span></span>,
+  "<span class="hljs-attribute">payouts</span>": <span class="hljs-value">[
+    { "<span class="hljs-attribute">from</span>": <span class="hljs-value"><span class="hljs-number">0</span></span>, "<span class="hljs-attribute">to</span>": <span class="hljs-value"><span class="hljs-number">2147483648</span></span>, "<span class="hljs-attribute">value</span>": <span class="hljs-value"><span class="hljs-number">1100</span> </span>},
+    { "<span class="hljs-attribute">from</span>": <span class="hljs-value"><span class="hljs-number">0</span></span>, "<span class="hljs-attribute">to</span>": <span class="hljs-value"><span class="hljs-number">400648</span></span>, "<span class="hljs-attribute">value</span>": <span class="hljs-value"><span class="hljs-number">20000</span> </span>}
+  ]</span>,
+  "<span class="hljs-attribute">wager</span>": <span class="hljs-value"><span class="hljs-number">1000</span>
+</span>}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#a1c2704ab9aaab3a8e49a45489af995a" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="a1c2704ab9aaab3a8e49a45489af995a" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">73454</span></span>,
+  "<span class="hljs-attribute">outcome</span>": <span class="hljs-value"><span class="hljs-number">2924272842</span></span>,
+  "<span class="hljs-attribute">profit</span>": <span class="hljs-value">-<span class="hljs-number">1000</span></span>,
+  "<span class="hljs-attribute">secret</span>": <span class="hljs-value"><span class="hljs-number">2800816053</span></span>,
+  "<span class="hljs-attribute">salt</span>": <span class="hljs-value"><span class="hljs-string">"2813102cbeee005055a5d4a9aa60894b"</span></span>,
+  "<span class="hljs-attribute">next_hash</span>": <span class="hljs-value"><span class="hljs-string">"adad8e8016690d23581de9dc08ba2df3cb1b5b945158e7463e0054d74a5c734d"</span>
+</span>}
+</code></pre></li></ul></section><h4 id="v1-bets-place-simple_dice-bet">Place simple_dice bet&nbsp;<a href="#v1-bets-place-simple_dice-bet"><i class="fa fa-link"></i></a></h4><section id="v1-bets-place-simple_dice-bet-post" class="panel panel-success"><div class="panel-heading"><div style="float:left"><a href="#v1-bets-place-simple_dice-bet-post" class="btn btn-xs btn-success">POST</a></div><div style="overflow:hidden"><code>/v1/bets/simple-dice</code></div></div><div class="panel-body"><p>A simple dice gives an outcome between 0 and 99.99, making a total of 10,000 distinct outcomes. The simple dice API
+allows you to bet if the outcome is less than (‘&lt;’) or greater than (‘&gt;’) a particular target.</p>
+<p>Simple Dice fields:</p>
+<ul>
+<li><p><code>payout</code> (required, number) The amount of satoshis to win, if the prediction is correct</p></li>
+<li><p><code>cond</code> (required, ‘&gt;’ or ‘&lt;’) The direction of the bet, greater or less than <code>target</code></p></li>
+<li><p><code>target</code> (required, 0 to 99.99) The field <code>cond</code> applies to.  (Note: You can’t bet &lt; 0 or &gt; 99.99)</p></li>
+</ul>
+</div><ul class="list-group"><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>confidential flow</code></strong><a data-toggle="collapse" data-target="#27578c541aa5dbcfe19a57b17b25bc58" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="27578c541aa5dbcfe19a57b17b25bc58" class="list-group-item panel-collapse collapse"><div class="description"><p>In this example, the bet is +EV for the player (51% of 2x), so we offer a subsidy. But normally the bet would be -EV for the player
+and not require it to be subsidized.</p>
+<ul>
+<li>Parameters
+<ul>
+<li>auth_id (required, integer)</li>
+<li>app_secret (required, uuid)</li>
+</ul></li>
+</ul>
+</div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">client_seed</span>": <span class="hljs-value"><span class="hljs-number">12345</span></span>,
+  "<span class="hljs-attribute">hash</span>": <span class="hljs-value"><span class="hljs-string">"4e8ce7094c5781bd89169434d0403c0b29fc96f538b5c67623563a0c59bb1537"</span></span>,
+  "<span class="hljs-attribute">cond</span>": <span class="hljs-value"><span class="hljs-string">"&lt;"</span></span>,
+  "<span class="hljs-attribute">target</span>": <span class="hljs-value"><span class="hljs-number">52.00</span></span>,
+  "<span class="hljs-attribute">payout</span>": <span class="hljs-value"><span class="hljs-number">2000</span></span>,
+  "<span class="hljs-attribute">wager</span>": <span class="hljs-value"><span class="hljs-number">1000</span></span>,
+  "<span class="hljs-attribute">max_subsidy</span>": <span class="hljs-value"><span class="hljs-number">1000</span>
+</span>}
+</code></pre></li><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>implicit flow</code></strong><a data-toggle="collapse" data-target="#c135a42e4e6233bc49c29eb8a9b3843b" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="c135a42e4e6233bc49c29eb8a9b3843b" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>access_token (required, uuid)</li>
+</ul></li>
+</ul>
+</div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">client_seed</span>": <span class="hljs-value"><span class="hljs-number">12345</span></span>,
+  "<span class="hljs-attribute">hash</span>": <span class="hljs-value"><span class="hljs-string">"4e8ce7094c5781bd89169434d0403c0b29fc96f538b5c67623563a0c59bb1537"</span></span>,
+  "<span class="hljs-attribute">cond</span>": <span class="hljs-value"><span class="hljs-string">"&lt;"</span></span>,
+  "<span class="hljs-attribute">target</span>": <span class="hljs-value"><span class="hljs-number">50.00</span></span>,
+  "<span class="hljs-attribute">payout</span>": <span class="hljs-value"><span class="hljs-number">2000</span></span>,
+  "<span class="hljs-attribute">wager</span>": <span class="hljs-value"><span class="hljs-number">1000</span>
+</span>}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#8ee57409ffbf0cb65042bc75cb8d4527" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="8ee57409ffbf0cb65042bc75cb8d4527" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">73454</span></span>,
+  "<span class="hljs-attribute">outcome</span>": <span class="hljs-value"><span class="hljs-number">63.32</span></span>,
+  "<span class="hljs-attribute">profit</span>": <span class="hljs-value">-<span class="hljs-number">1000</span></span>,
+  "<span class="hljs-attribute">secret</span>": <span class="hljs-value"><span class="hljs-number">2800816053</span></span>,
+  "<span class="hljs-attribute">salt</span>": <span class="hljs-value"><span class="hljs-string">"2813102cbeee005055a5d4a9aa60894b"</span></span>,
+  "<span class="hljs-attribute">next_hash</span>": <span class="hljs-value"><span class="hljs-string">"adad8e8016690d23581de9dc08ba2df3cb1b5b945158e7463e0054d74a5c734d"</span>
+</span>}
+</code></pre></li></ul></section><h4 id="v1-bets-place-plinko-bet">Place plinko bet&nbsp;<a href="#v1-bets-place-plinko-bet"><i class="fa fa-link"></i></a></h4><section id="v1-bets-place-plinko-bet-post" class="panel panel-success"><div class="panel-heading"><div style="float:left"><a href="#v1-bets-place-plinko-bet-post" class="btn btn-xs btn-success">POST</a></div><div style="overflow:hidden"><code>/v1/bets/plinko</code></div></div><div class="panel-body"><p>Plinko is a simple game modeled after a <a href="http://en.wikipedia.org/wiki/Bean_machine">bean machine</a> in which a balls falls
+from the top of the board hitting a peg, where it has a 50% chance of going left, and a 50% chance of going right. After
+which it falls through onto the next layer of pegs. This process keeps repeating until we finally land on the <code>pay_table</code> which says how much to win.</p>
+<p>If there are N layers of pegs, there wil lbe N+1 elements in the paytable.</p>
+<p>The only input the API requires is the <code>pay_table</code> which it will chop up into probability ranges for the provably fair API.
+The server will then not only return the outcome (through standard provably fair mechanisms) but will tell the exact path
+the ball went (‘L’ for left, ‘R’ for right).</p>
+<p>Plinko fields:</p>
+<ul>
+<li><code>pay_table</code> (required, array) An array of desirable multipliers. Given from left to right. The paytable must be between
+2 elements ( 1 page layer) and 33 (32 decisions, the most our provably fair system can support)</li>
+</ul>
+</div><ul class="list-group"><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>confidential flow</code></strong><a data-toggle="collapse" data-target="#c8001521c31105eaa31038f539376fb6" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="c8001521c31105eaa31038f539376fb6" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>auth_id (required, integer)</li>
+<li>app_secret (required, uuid)</li>
+</ul></li>
+</ul>
+</div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">client_seed</span>": <span class="hljs-value"><span class="hljs-number">12345</span></span>,
+  "<span class="hljs-attribute">hash</span>": <span class="hljs-value"><span class="hljs-string">"4e8ce7094c5781bd89169434d0403c0b29fc96f538b5c67623563a0c59bb1537"</span></span>,
+  "<span class="hljs-attribute">wager</span>": <span class="hljs-value"><span class="hljs-number">100</span></span>,
+  "<span class="hljs-attribute">pay_table</span>": <span class="hljs-value">[<span class="hljs-number">22</span>, <span class="hljs-number">5</span>, <span class="hljs-number">3</span>, <span class="hljs-number">2</span>, <span class="hljs-number">1.4</span>, <span class="hljs-number">1.2</span>, <span class="hljs-number">1.1</span>, <span class="hljs-number">1.0</span>, <span class="hljs-number">0.4</span>, <span class="hljs-number">1</span>,  <span class="hljs-number">1.1</span>, <span class="hljs-number">1.2</span>, <span class="hljs-number">1.4</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">5</span>, <span class="hljs-number">22</span>]
+</span>}
+</code></pre></li><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>implicit flow</code></strong><a data-toggle="collapse" data-target="#7d8e90eff9747714d9cb2b7de11b8d5a" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="7d8e90eff9747714d9cb2b7de11b8d5a" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>access_token (required, uuid)</li>
+</ul></li>
+</ul>
+</div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">client_seed</span>": <span class="hljs-value"><span class="hljs-number">12345</span></span>,
+  "<span class="hljs-attribute">hash</span>": <span class="hljs-value"><span class="hljs-string">"4e8ce7094c5781bd89169434d0403c0b29fc96f538b5c67623563a0c59bb1537"</span></span>,
+  "<span class="hljs-attribute">wager</span>": <span class="hljs-value"><span class="hljs-number">100</span></span>,
+  "<span class="hljs-attribute">pay_table</span>": <span class="hljs-value">[<span class="hljs-number">22</span>, <span class="hljs-number">5</span>, <span class="hljs-number">3</span>, <span class="hljs-number">2</span>, <span class="hljs-number">1.4</span>, <span class="hljs-number">1.2</span>, <span class="hljs-number">1.1</span>, <span class="hljs-number">1.0</span>, <span class="hljs-number">0.4</span>, <span class="hljs-number">1</span>,  <span class="hljs-number">1.1</span>, <span class="hljs-number">1.2</span>, <span class="hljs-number">1.4</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">5</span>, <span class="hljs-number">22</span>]
+</span>}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#6122c2231cf4e99b8459168ca8fb1fb3" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="6122c2231cf4e99b8459168ca8fb1fb3" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">13</span></span>,
+    "<span class="hljs-attribute">outcome</span>": <span class="hljs-value"><span class="hljs-string">"LLLRRRLLLLLLRLLR"</span></span>,
+    "<span class="hljs-attribute">profit</span>": <span class="hljs-value"><span class="hljs-number">20</span></span>,
+    "<span class="hljs-attribute">secret</span>": <span class="hljs-value"><span class="hljs-number">246593236</span></span>,
+    "<span class="hljs-attribute">salt</span>": <span class="hljs-value"><span class="hljs-string">"5aebd1f790e6ad7cff0f5f0c8a170a48"</span></span>,
+    "<span class="hljs-attribute">next_hash</span>": <span class="hljs-value"><span class="hljs-string">"e7a3a56b161a8861685a485b8a901fa6a8c1f6e4b8b5762c3bacd989d6e675d1"</span>
+</span>}
+</code></pre></li></ul></section><h4 id="v1-bets-place-101_dice-bet">Place 101_dice bet&nbsp;<a href="#v1-bets-place-101_dice-bet"><i class="fa fa-link"></i></a></h4><section id="v1-bets-place-101_dice-bet-post" class="panel panel-success"><div class="panel-heading"><div style="float:left"><a href="#v1-bets-place-101_dice-bet-post" class="btn btn-xs btn-success">POST</a></div><div style="overflow:hidden"><code>/v1/bets/101-dice</code></div></div><div class="panel-body"><p>101_dice gives an outcome between 0 and 100 (a total of 100 distinct outcomes). The simple dice API
+allows you to bet if the outcome is less than (‘&lt;’) or greater than (‘&gt;’) a particular target.</p>
+<p>Simple Dice fields:</p>
+<ul>
+<li><p><code>payout</code> (required, number) The amount of satoshis to win, if the prediction is correct</p></li>
+<li><p><code>cond</code> (required, ‘&gt;’ or ‘&lt;’) The direction of the bet, greater or less than <code>target</code></p></li>
+<li><p><code>target</code> (required, 0 to 100.) The field <code>cond</code> applies to.  (Note: You can’t bet &lt; 0 or &gt; 100)</p></li>
+</ul>
+</div><ul class="list-group"><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>confidential flow</code></strong><a data-toggle="collapse" data-target="#9d708b10f6a422d9cb613d57e4aa2b36" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="9d708b10f6a422d9cb613d57e4aa2b36" class="list-group-item panel-collapse collapse"><div class="description"><p>In this example, the bet is +EV for the player (51% of 2x), so we offer a subsidy. But normally the bet would be -EV for the player
+and not require it to be subsidized.</p>
+<ul>
+<li>Parameters
+<ul>
+<li>auth_id (required, integer)</li>
+<li>app_secret (required, uuid)</li>
+</ul></li>
+</ul>
+</div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+  <span class="hljs-attribute">client_seed</span>: <span class="hljs-number">12345</span>
+  <span class="hljs-attribute">hash</span>: <span class="hljs-string">"4e8ce7094c5781bd89169434d0403c0b29fc96f538b5c67623563a0c59bb1537"</span>
+  <span class="hljs-attribute">cond</span>: <span class="hljs-string">'&lt;'</span>,
+  <span class="hljs-attribute">target</span>: <span class="hljs-number">52</span>,
+  <span class="hljs-attribute">payout</span>: <span class="hljs-number">2000</span>,
+  <span class="hljs-attribute">wager</span>: <span class="hljs-number">1000</span>,
+  <span class="hljs-attribute">max_subsidy</span>: <span class="hljs-number">1000</span>
+}
+</code></pre></li><li class="list-group-item"><strong>Request&nbsp;&nbsp;<code>implicit flow</code></strong><a data-toggle="collapse" data-target="#e02ddd7b3b5266d5d5870e7407b04371" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="e02ddd7b3b5266d5d5870e7407b04371" class="list-group-item panel-collapse collapse"><div class="description"><ul>
+<li>Parameters
+<ul>
+<li>access_token (required, uuid)</li>
+</ul></li>
+</ul>
+</div><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+  <span class="hljs-attribute">client_seed</span>: <span class="hljs-number">12345</span>
+  <span class="hljs-attribute">hash</span>: <span class="hljs-string">"4e8ce7094c5781bd89169434d0403c0b29fc96f538b5c67623563a0c59bb1537"</span>
+  <span class="hljs-attribute">cond</span>: <span class="hljs-string">'&lt;'</span>,
+  <span class="hljs-attribute">target</span>: <span class="hljs-number">50</span>,
+  <span class="hljs-attribute">payout</span>: <span class="hljs-number">2000</span>,
+  <span class="hljs-attribute">wager</span>: <span class="hljs-number">1000</span>
+}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#a579d95210d0e879844779bbcdda5540" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="a579d95210d0e879844779bbcdda5540" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+  "<span class="hljs-attribute">id</span>": <span class="hljs-value"><span class="hljs-number">73454</span></span>,
+  "<span class="hljs-attribute">outcome</span>": <span class="hljs-value"><span class="hljs-number">63.32</span></span>,
+  "<span class="hljs-attribute">profit</span>": <span class="hljs-value">-<span class="hljs-number">1000</span></span>,
+  "<span class="hljs-attribute">secret</span>": <span class="hljs-value"><span class="hljs-number">2800816053</span></span>,
+  "<span class="hljs-attribute">salt</span>": <span class="hljs-value"><span class="hljs-string">"2813102cbeee005055a5d4a9aa60894b"</span></span>,
+  "<span class="hljs-attribute">next_hash</span>": <span class="hljs-value"><span class="hljs-string">"adad8e8016690d23581de9dc08ba2df3cb1b5b945158e7463e0054d74a5c734d"</span>
+</span>}
+</code></pre></li></ul></section></div></div></div></div></div></div><p style="text-align: center;" class="text-muted">Generated by&nbsp;<a href="https://github.com/danielgtaylor/aglio" class="aglio">aglio</a>&nbsp;on 09 Nov 2015</p><div id="localFile" style="display: none; position: absolute; top: 0; left: 0; width: 100%; color: white; background: red; font-size: 150%; text-align: center; padding: 1em;">This page may not display correctly when opened as a local file. Instead, view it from a web server.
+
+</div></body><script src="//code.jquery.com/jquery-1.11.0.min.js"></script><script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script><script>(function() {
+  if (location.protocol === 'file:') {
+    document.getElementById('localFile').style.display = 'block';
+  }
+
+}).call(this);
+</script><script>(function() {
+  $('table').addClass('table');
+
+}).call(this);
+</script></html>

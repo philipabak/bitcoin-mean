@@ -1,0 +1,49 @@
+/*
+    This file is for generic style tweaks.
+ */
+
+/*
+    Add gutter so that content doesn't sit flush against bottom of screen
+ */
+body {
+    padding-bottom: 20px;
+}
+
+/*
+  Add large gutter before the global footer
+*/
+#global-footer {
+  margin-top: 500px;
+  text-align: center;
+  border-top: 1px solid #ccc;
+  padding-top: 10px;
+  font-size: 90%;
+}
+
+/*
+    Use this class to render an element unselectable. This is purely to
+    improve user experience where extraneous clicks will annoyingly highlight
+    content.
+*/
+.no-select {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Give glyphicons a width so they don't flash as hard when they load */
+.glyphicon {
+    width: 1em;
+}
+
+/*
+  Intended to be used with .disabled so that .disabled uses Bootstrap's
+  styling, but it opts back in to pointer events. i.e. use this when you
+  only want the styling effect of .disabled.
+*/
+.but-clickable {
+    pointer-events: auto !important;
+}

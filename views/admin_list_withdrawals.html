@@ -1,0 +1,38 @@
+{% extends 'profile_layout.html' %}
+
+{% block profileTabContent %}
+<div class="page-header">
+  <h1>Withdrawals</h1>
+</div>
+
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>id</th>
+      <th>uname</th>
+      <th>txid</th>
+      <th>address</th>
+      <th>amount</th>
+      <th>created</th>
+    </tr>
+  </thead>
+  {% for withdrawal in withdrawals %}
+    <tr>
+      <td><a href="/withdrawals/{{ withdrawal.id }}">{{ withdrawal.id.substring(0,8) }}...</a></td>
+      <td><a href="/users/{{ withdrawal.uname }}">{{ withdrawal.uname }}</a></td>
+      <td><a href="https://blockchain.info/tx/{{ withdrawal.txid }}">{{ withdrawal.txid.substring(0, 8) }}...</a></td>
+      <td><a href="https://blockchain.info/address/{{ withdrawal.to_address }}">{{ withdrawal.to_address }}</a></td>
+      <td>{{ withdrawal.amount|formatSatoshis }} bits</td>
+      <td>{{ withdrawal.created_at|formatDate  }}</td>
+    </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+  $("abbr.timeago").timeago();
+</script>
+{% endblock %}

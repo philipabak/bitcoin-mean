@@ -1,0 +1,231 @@
+{% extends 'profile_layout.html' %}
+
+{% block profileTabContent %}
+
+<div class="page-header">
+  <h1>Receive</h1>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="new-address-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <!-- Form -->
+  <form action="/me/addresses" method="post">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Generate A New Address</h4>
+      </div>
+      <div class="modal-body">
+
+          <!-- Memo -->
+          <label for="memo-input">Memo <span class="glyphicon glyphicon-pushpin"></span></label>
+          <input type="text" placeholder="Example: Expecting 2,000 from Coinbase" name="memo" class="form-control" id="memo-input">
+          <p class="help-block">
+            A short description that you can use to give some meaning to an address (Optional)
+          </p>
+
+          <!-- Cold -->
+          <div class="checkbox">
+            <label>
+              <input name="cold" type="checkbox" id="cold-address-toggle">
+              <span class="no-select"><strong>Cold Address</strong></span>
+            </label>
+            <div class="text-muted">
+              Exclude address from hot wallet for privacy. <em>Charges a 1% deposit fee</em> <a href="/faq#cold-addresses" target="_blank">More info</a><br>
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <!-- Close button -->
+        <button type="button" class="btn btn-default" data-dismiss="modal">
+          Cancel
+        </button>
+        <!-- Submit button -->
+        <button type="submit" class="btn btn-primary">
+          Create Address
+        </button>
+        <div id="cold-address-reminder" style="display: none; margin-top: 10px;">
+          Reminder: All deposits to a cold address are charged a 1% processing fee
+        </div>
+      </div>
+    </div>
+  </div>
+  </form>
+</div>
+
+
+<div class="panel panel-default">
+  <div class="panel-heading clearfix">
+
+    <!-- New address modal button-->
+    <button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#new-address-modal">
+      <span class="glyphicon glyphicon-plus"></span>
+      New Address
+    </button>
+
+    <!-- Panel title -->
+    <h3 class="panel-title" style="margin-top: 8px;">
+      Wallet Addresses
+    </h3>
+
+  </div>
+
+  <div class="panel-body">
+
+    <p>Unconfirmed bits are added to your balance (ready to be spent) when they show up in <strong>one block</strong>.</p>
+
+  </div> <!-- /.panel-body -->
+
+  <!-- Address list group -->
+
+  <ul class="list-group">
+    <li class="list-group-item" style="border: 0; font-weight: bold">
+      <div class="row">
+        <div class="col-sm-6">Address</div>
+        <div class="col-sm-2">Received<br>(Confirmed)</div>
+        <div class="col-sm-2">Received<br>(Unconfirmed)</div>
+        <div class="col-sm-2">Created</div>
+      </div>
+    </li>
+    {% for addr in addresses %}
+      <li class="list-group-item address-item" data-address-id="{{ addr.id }}">
+        <a name="address-{{ addr.id }}"></a>
+        <div class="row">
+          <div class="col-sm-6">
+            <a style="cursor: pointer" tabindex="1" data-toggle="popover" title="QR Code" data-address="{{ addr.address }}"><span class="glyphicon glyphicon-qrcode" aria-hidden="true" id="glyphicon-{{ addr.address }}" data-address="{{ addr.address }}"></span></a>
+            <code>{{ addr.address }}</code>
+            {% if addr.cold %}
+              <span class="label label-info" style="margin-right: 5px;">
+                <span class="glyphicon glyphicon-asterisk"></span>
+                Cold
+              </span>
+            {% endif %}
+            {% if addr.auto %}
+              <span class="label label-success" style="margin-right: 5px;">
+                <span class="glyphicon glyphicon-leaf"></span>
+                Auto-Generated
+              </span>
+            {% endif %}
+            {% if addr.app_name %}
+              <span class="label label-warning" style="margin-right: 5px;">
+                <span class="glyphicon glyphicon-apple"></span>
+                Deposits into: {{ addr.app_name }}
+              </span>
+            {% endif %}
+            <a href="{{ addr.url }}/edit"
+               class="edit-memo-link"
+               data-address-id="{{ addr.id }}"
+               style="display: none;">
+              <span class="glyphicon glyphicon-pushpin"></span> Edit Memo
+            </a>
+          </div>
+          <div class="col-sm-2">{{ addr.confirmed_received|formatSatoshis }} bits</div>
+          <div class="col-sm-2">{{ addr.unconfirmed_received|formatSatoshis }} bits</div>
+          <div class="col-sm-2">
+            <abbr class="timeago" title="{{ addr.created_at.toISOString() }}">
+              {{ addr.created_at|formatDate }}
+            </abbr>
+          </div>
+        </div>
+        {% if addr.memo %}
+          <div class="row">
+            <div class="col-sm-12 text-muted">
+               {{ addr.memo }}
+            </div>
+          </div>
+        {% endif %}
+        {# -- Edit address memo form -- #}
+          <form class="form-inline edit-memo-form" style="display: none;"
+                action="{{ addr.url }}"
+                method="post"
+                data-address-id="{{ addr.id }}">
+            <input type="hidden" name="_method" value="put">
+            <input type="text"
+                   value="{{ addr.memo }}"
+                   name="memo"
+                   class="form-control edit-memo-input input-sm">
+            <button type="button"
+                    class="edit-memo-cancel-btn btn btn-default btn-sm"
+                    data-address-id="{{ addr.id }}">
+              Cancel
+            </button>
+            <input type="submit" value="Update"
+                   class="btn btn-primary btn-sm">
+          </form>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="/vendor/jquery.qrcode-0.11.0.min.js"></script>
+
+<script type="text/javascript">
+$('#cold-address-toggle').on('click', function() {
+  var $reminder = $('#cold-address-reminder');
+  if (this.checked)
+    $reminder.show();
+  else
+    $reminder.hide();
+});
+</script>
+
+<script>
+  $('.edit-memo-cancel-btn').on('click', function(e) {
+    var addressId = parseInt($(this).attr('data-address-id'));
+     $form = $('.edit-memo-form[data-address-id="' + addressId + '"]');
+    $form.hide();
+  });
+
+  $('.edit-memo-link').on('click', function(e) {
+    e.preventDefault();
+    var addressId = parseInt($(this).attr('data-address-id'));
+    $form = $('.edit-memo-form[data-address-id="' + addressId + '"]');
+    $form.toggle();
+
+    // Focus the input, but use hack to place cursor at end of input
+    // which is slightly more convenient
+    $memoInput = $form.find('.edit-memo-input');
+    $memoInput.focus();
+    var val = $memoInput.val();
+    $memoInput.val('');
+    $memoInput.val(val);
+  });
+  function handlerIn(e) {
+    var addressId = parseInt($(this).attr('data-address-id'));
+    var $editMemoLink = $('.edit-memo-link[data-address-id="' + addressId + '"]');
+    $editMemoLink.show();
+  }
+  function handlerOut(e) {
+    var addressId = parseInt($(this).attr('data-address-id'));
+    var $editMemoLink = $('.edit-memo-link[data-address-id="' + addressId + '"]');
+    $editMemoLink.hide();
+  }
+  $('.address-item').hover(handlerIn, handlerOut);
+
+
+
+  $(function() {
+    $("abbr.timeago").timeago();
+
+    $('[data-toggle="popover"]').popover({
+      trigger: 'focus',
+      html: true,
+      content: function() {
+        var address = $(this).attr('data-address');
+        var $canvas = $('<canvas width="203px" height="203px" id="canvas-' + address + '"></canvas>');
+
+        $canvas.qrcode({
+          size: 203,
+          text: address
+        });
+
+        return $canvas[0];
+      }
+    });
+
+  });
+</script>
+{% endblock %}

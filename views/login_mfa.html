@@ -1,0 +1,66 @@
+{% extends 'master.html' %}
+
+{% block embed %}
+
+{# NOTE: Can't use flash since login2 is rendered within POST /sessions
+   rather than after a redirect #}
+{% if alert %}
+  <div class="alert alert-{{ alert[0] }}" role="alert">{{ alert[1] }}</div>
+{% endif %}
+
+<div class="page-header">
+  <h1>Login (Step 2)</h1>
+</div>
+
+<div class="row">
+  <div class="col-sm-6 col-sm-offset-3">
+    <form action="/login_mfa" method="post" class="form-horizontal">
+      <div class="panel panel-default">
+        <!--
+            PANEL BODY
+            -->
+        <div class="panel-body">
+
+          <input type="hidden" name="login_attempt_id" value="{{ loginAttemptId }}">
+          {% if rememberMe %}
+            <input type="hidden" name="remember-me" value="true">
+          {% endif %}
+
+          <div class="form-group">
+            <label for="passcode-input"
+                   class="col-sm-4 control-label">
+              Two-Factor Passcode:
+            </label>
+            <div class="col-sm-8">
+              <input id="passcode-input"
+                     type="text"
+                     name="passcode"
+                     placeholder="6-digit passcode"
+                     class="form-control" required>
+            </div>
+          </div>
+
+        </div> <!-- /.panel-body -->
+        <!--
+            PANEL FOOTER
+            -->
+        <div class="panel-footer">
+          <div class="text-right">
+            <a href="/login" class="btn btn-default">Cancel</a>
+            <input id="login-submit"
+                   type="submit"
+                   value="Submit"
+                   class="btn btn-primary">
+          </div>
+        </div> <!-- /.panel-footer -->
+      </div> <!-- /.panel -->
+    </form>
+  </div> <!-- /col -->
+</div> <!-- /.row -->
+{% endblock %}
+
+{% block scripts %}
+<script>
+  $('#passcode-input').focus();
+</script>
+{% endblock %}

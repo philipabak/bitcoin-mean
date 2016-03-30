@@ -1,0 +1,18 @@
+
+/*
+    Add gutter to the global navbar so that it's not flush against
+    the top of the screen.
+*/
+
+body {
+  padding-top: 20px;
+}
+
+/*
+    Undo the 3d depth that bootstrap-theme gives to the
+    navbar. Make it transparent again.
+*/
+.navbar-default {
+    background-image: none;
+    box-shadow: none;
+}

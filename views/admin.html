@@ -1,0 +1,169 @@
+{% extends 'profile_layout.html' %}
+
+{% block profileTabContent %}
+
+<div class="page-header">
+  <h1>Admin Panel</h1>
+  <a href="/admin/users">List Users</a> |
+	<a href="/admin/faucets">Faucet Claims</a> |
+    <a href="/admin/deposits">All deposits</a> |
+    <a href="/admin/withdrawals">All withdrawals</a> |
+  &mdash; Admins:
+  <ul class="list-inline" style="display: inline-block;">
+    {% for user in adminUsers %}
+      <li>
+        <a href="{{ user.url }}">{{ user.uname }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-body">
+
+    <div class="row">
+      <div class="col-sm-3" style="font-weight: bold;">
+        Hot wallet balance:
+      </div>
+      <div class="col-sm-9">
+        {% if bitcoindError %}
+          <span class="text-danger">
+            Error loading hot wallet: {{ bitcoindError.toString() }}
+          </span>
+        {% else %}
+          {{ hotWallet|formatSatoshis }} bits
+        {% endif %}
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="row">
+      <div class="col-sm-3" style="font-weight: bold;">
+        Unsuccessful transactions:
+      </div>
+      <div class="col-sm-9">
+          <table class="table">
+              {% for transaction in unsuccessfulTransactions %}
+              <tr>
+                  <td>
+                      <pre>{{- JSON.stringify(transaction, null, '  ') }}</pre>
+                  </td>
+                  <td style="vertical-align: middle">
+                      {% if transaction.status === 'queued' || transaction.status === 'failed' %}
+                          <form method="POST" action="/admin/process-withdrawal">
+                              {% if hotWallet > transaction.amount %}
+                              <button type="submit" class="btn btn-success btn-lg" name="withdrawal-id" value="{{transaction.id}}">Send!</button>
+                              {% else %}
+                              <button type="submit" class="btn disabled but-clickable" name="withdrawal-id" value="{{transaction.id}}">Send!</button>
+                              {% endif %}
+                          </form>
+                      {% else %}
+                        <form method="POST" action="/admin/succeed-withdrawal">
+                            <input type="hidden" name="withdrawal-id" value="{{ transaction.id }}">
+                            <input type="text" name="txid" placeholder="bitcoin txid" />
+                            <input type="submit" value="mark as sent">
+                        </form>
+                      <hr>
+                      <form method="POST" action="/admin/fail-withdrawal">
+                          <input type="hidden" name="withdrawal-id" value="{{ transaction.id }}">
+                          <input type="submit" value="Mark as failed">
+                      </form>
+                      {% endif %}
+                  </td>
+                  <td>
+                      <abbr class="timeago" title="{{ transaction.created_at.toISOString() }}">
+                          {{ transaction.created_at|formatDate }}
+                      </abbr>
+                  </td>
+              </tr>
+              {% endfor %}
+          </table>
+
+
+
+
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="row">
+      <div class="col-sm-3" style="font-weight: bold;">
+        Top up address:
+      </div>
+      <div class="col-sm-9">
+        <form method="post" action="/admin/gen-top-up-address">
+            <input type="submit" class="btn btn-default" value="Generate new address!">
+        </form>
+      </div>
+    </div>
+
+  </div><!-- /panel-body -->
+</div><!-- /panel -->
+
+<!-- BANNER ANNOUNCEMENT -->
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Banner Announcement</h3>
+  </div>
+  <div class="panel-body">
+
+    <p class="text-muted">
+      Note: This announcement is cached in memory and updated every 30 seconds.
+    </p>
+
+    {% if getBannerAnnouncement() %}
+      <form method="post" action="/admin/banner-announcement">
+        <input type="hidden" name="_method" value="delete">
+        <button type="submit" class="pull-right btn btn-xs btn-default">
+          Clear
+        </button>
+      </form>
+
+      <h5>Current announcement:</h5>
+
+      <div class="alert alert-{{ getBannerAnnouncement().type }}">
+        {{ getBannerAnnouncement().html }}
+      </div>
+
+    {% endif %}
+
+    <form method="post" action="/admin/banner-announcement">
+      <label>HTML:</label>
+      <textarea class="form-control"
+                style="font-family: Courier New, monospace"
+                name="html"
+      >{{ (getBannerAnnouncement() && getBannerAnnouncement().html) || '' }}</textarea>
+      <div class="radio">
+        {% for type in ['success', 'danger', 'info', 'warning'] %}
+          <label>
+            <input type="radio" name="type" value="{{ type }}"
+                   {% if getBannerAnnouncement() && getBannerAnnouncement().type === type %}
+                     checked
+                   {% endif %}
+            >
+            <span class="label label-{{ type }}">
+              {{ type }}
+            </span>
+          </label>
+        {% endfor %}
+      </div>
+
+      <button type="submit" class="btn btn-default">
+        Save
+      </button>
+
+    </form>
+  </div>
+</div>
+<!-- END BANNER ANNOUNCEMENT -->
+
+
+{% endblock %}
+
+{% block scripts %}
+  <script type="text/javascript">
+    $("abbr.timeago").timeago();
+  </script>
+{% endblock %}

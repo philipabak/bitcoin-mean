@@ -1,0 +1,144 @@
+{% extends 'show_send.html' %}
+
+{% block sendForm %}
+    <!-- Form -->
+    <form class="form-horizontal"
+          role="form"
+          method="post"
+          id="send-form"
+          action="/me/send/to-user"
+          >
+      <div class="panel-body">
+      <div class="form-group">
+        <label class="col-sm-2 control-label">To</label>
+        <div class="col-sm-10">
+
+          <!-- Tabs -->
+          <ul class="nav nav-tabs">
+            <li>
+              <a href="/me/send" id="to-bitcoin-address-tab">
+                Bitcoin Address
+              </a>
+            </li>
+            <li class="active">
+              <a href="/me/send/to-user" id="to-user-tab">
+                MoneyPot User
+              </a>
+            </li>
+          </ul>
+
+          <div class="tabbed-content tab-content">
+
+            <div class="tab-pane active" role="tabpanel" id="to-user">
+              <input type="text"
+                     class="form-control uname-typeahead"
+                     id="to-user-input"
+                     name="to"
+                     placeholder="Username"
+                     {% if ctx.flash.params %}
+                     value="{{ ctx.flash.params.to }}"
+                     {% endif %}
+                     >
+            </div>
+          </div> <!-- /.tabbed-content -->
+        </div>
+      </div>
+
+      <!-- Amount -->
+      <div class="form-group">
+        <label class="col-sm-2 control-label">Amount</label>
+
+        <div class="col-sm-4">
+          <input type="number"
+                 class="form-control"
+                 id="amount"
+                 name="amount"
+                 {% if ctx.flash.params %}
+                 value="{{ ctx.flash.params.amount }}"
+                 {% endif %}
+                 required>
+        </div>
+        <div class="col-sm-2">
+          <select class="form-control" name="units" id="units">
+              <option{% if ctx.flash.params && ctx.flash.params.units == 'bits' %} selected{% endif %}>bits</option>
+              <option{% if ctx.flash.params && ctx.flash.params.units == 'bitcoin' %} selected{% endif %}>bitcoin</option>
+          </select>
+        </div>
+        <div class="col-sm-4" style="padding-top: 6px;" >
+          Total: <strong id="total">0</strong> bits (includes <strong id="txfee">0</strong> bits of transaction fee)</p>
+        </div>
+      </div>
+
+        <!-- fake fields are a workaround for chrome autofill getting the wrong fields -->
+        <input style="display:none" type="text" name="fakeusernameremembered"/>
+        <input style="display:none" type="password" name="fakepasswordremembered"/>
+
+          <div class="form-group">
+              <label class="col-sm-2 control-label">
+                <span class="glyphicon glyphicon-pushpin"></span>
+                Memo:
+              </label>
+
+              <div class="col-sm-10">
+                  <input type="text" name="memo" class="form-control" placeholder="Optional private message to yourself"
+                         {% if ctx.flash.params %}
+                         value="{{ ctx.flash.params.memo }}"
+                         {% endif %}
+                    >
+              </div>
+          </div>
+
+
+      </div> <!-- /.panel-body -->
+
+      <!-- Panel footer -->
+      <div class="panel-footer text-right">
+
+        <div style="display: inline-block;">
+
+            <!-- Password -->
+            <div style="display: inline-block;">
+              Password:
+              <input type="password"
+                    placeholder="Your password"
+                    style="width: 200px; display: inline-block;"
+                    name="password"
+                    class="form-control"
+              >
+            </div>
+
+            <!-- 2FA passcode -->
+            {% if ctx.currUser.mfa_key %}
+              <div style="display: inline-block;">
+                2FA code:
+                <input type="text"
+                      style="width: 200px; display: inline-block;"
+                      class="form-control"
+                      placeholder="6-digit 2FA passcode"
+                      id="passcode"
+                      name="passcode"
+                >
+              </div>
+            {% endif %}
+        </div>
+
+        <!-- Submit button -->
+        <input type="submit" class="btn btn-primary" value="Send Bitcoin">
+
+      </div> <!-- /.panel-footer -->
+    </form>
+{% endblock sendForm %}
+
+{% block childScripts %}
+
+  <script src="/js/usernamesTypeahead.js"></script>
+  <script>
+    var userSearcher = new UserTypeaheadSearcher();
+    userSearcher.mount('.uname-typeahead');
+  </script>
+
+  <script type="text/javascript">
+    $('#to-user-input').focus();
+  </script>
+
+{% endblock %}

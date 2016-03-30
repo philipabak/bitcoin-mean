@@ -1,0 +1,98 @@
+{% extends 'master.html' %}
+
+{% block embed %}
+
+<!-- Crumbs -->
+
+<ol class="breadcrumb">
+  <li><a href="/">Home</a></li>
+  <li>Users</li>
+  <li class="active">{{ user.uname }}</li>
+</ol>
+
+<!-- Page header -->
+
+<div class="page-header">
+  <h1>
+    <a href="{{ user.url }}" style="color: #333;">{{ user.uname }}</a>
+    {% if user.role === 'admin' %}
+      <span class="label label-default">MoneyPot Staff</span>
+    {% endif %}
+  </h1>
+</div>
+
+<ul>
+  <li>
+    Joined:
+    <abbr class="timeago" title="{{ user.created_at.toISOString() }}">
+        {{ user.created_at|formatDate }}
+    </abbr>
+  </li>
+</ul>
+
+{% if public_stats.length > 0 %}
+<h2>Public Gambling Stats</h2>
+<table class="table">
+	<tr>
+		<th>Casino</th>
+		<th>Bets</th>
+		<th>Wagered</th>
+		<th>Net Profit</th>
+	</tr>
+	{% for stat in public_stats %}
+	<tr>
+		<td><a href="{{ stat.app.url}}">{{ stat.app.name }}</a></td>
+		<td>{{ stat.betted_count }}</td>
+		<td>{{ stat.betted_wager|formatSatoshis }} bits</td>
+		<td>{{ stat.betted_profit|formatSatoshis }} bits</td>
+	</tr>
+
+
+	{% endfor %}
+
+</table>
+{% else %}
+<div class="jumbotron">
+	User has no public stats from a casino
+</div>
+
+{% endif %}
+
+
+
+{% if ctx.currUser && ctx.currUser.role === 'admin' %}
+  You can only see this because you're an admin:
+
+  <hr>
+  <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+  {% for stats in private_stats %}
+	  <div class="panel panel-default">
+		  <div class="panel-heading" role="tab" id="heading-{{ loop.key }}">
+        <h4 class="panel-title">
+			  <a data-toggle="collapse" data-parent="#accordion" href="#collapse-{{ loop.key }}" aria-expanded="true" aria-controls="collapse-{{ loop.key }}">
+				  {{ loop.key }} ({{stats.length}})
+				  </a>
+        </h4>
+			</div>
+				<div id="collapse-{{ loop.key }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-{{ loop.key }}">
+				  <div class="panel-body">
+					  {% for entry in stats %}
+	       <pre># {{ entry.created_at |formatDate }}
+{{ JSON.stringify(entry.payload, null, ' ') }}</pre>
+					  {% endfor %}
+					</div>
+				</div>
+	  </div>
+  {% endfor %}
+
+  </div>
+<hr>
+<pre>{{ JSON.stringify(user, null, '  ') }}</pre>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+  <script type="text/javascript">
+    $('.timeago').timeago();
+  </script>
+{% endblock %}
